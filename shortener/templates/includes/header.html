@@ -1,0 +1,45 @@
+<header class="header py-3 bg-white shadow-sm">
+    <div class="container">
+        <nav class="d-flex justify-content-between align-items-center">
+            <!-- Logo -->
+            <a href="/" class="text-decoration-none">
+                <div class="d-flex align-items-center">
+                    <h1 class="h3 mb-0 font-weight-bold" style="color: var(--primary-color);">Bitly</h1>
+                    <span class="ml-2 text-muted">.works</span>
+                </div>
+            </a>
+
+            <!-- Navigation --
+
+            <!-- Mobile Menu Button -->
+            <button class="d-md-none btn btn-link p-0" type="button" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="d-none">
+            <div class="py-3">
+                <a href="/" class="d-block py-2 text-dark text-decoration-none">Home</a>
+                <a href="/features" class="d-block py-2 text-dark text-decoration-none">Features</a>
+                <a href="/pricing" class="d-block py-2 text-dark text-decoration-none">Pricing</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<script>
+function toggleMobileMenu() {
+    const menu = document.getElementById('mobileMenu');
+    menu.classList.toggle('d-none');
+}
+</script>
+
+<style>
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: white;
+}
+</style>
