@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Shortener</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
+            min-height: 100vh;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .gradient-text {
+            background: linear-gradient(90deg, #4a90e2 0%, #5c6bc0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .copy-button {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .copy-button:hover {
+            color: #4a90e2;
+        }
+        .loading {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #4a90e2;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="gradient-bg">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card mb-4">
+                    <div class="card-body text-center">
+                        <h1 class="gradient-text mb-3">URL Shortener</h1>
+                        <p class="text-muted mb-4">Transform your long URLs into concise, shareable links</p>
+                        
+                        <form method="POST" action="{% url 'shorten_url' %}" id="shortenForm">
+                            {% csrf_token %}
+                            <div class="input-group mb-3">
+                                <input type="url" name="original_url" class="form-control form-control-lg" 
+                                       placeholder="Enter your long URL here" required>
+                                <div class="input-group-append">
+                                    <button class="btn btn-primary px-4" type="submit">
+                                        <span class="normal-state">
+                                            Shorten <i class="fas fa-arrow-right ml-2"></i>
+                                        </span>
+                                        <span class="loading"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+
+                        {% if short_url %}
+                        <div class="alert alert-success mt-4">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span id="shortUrl">{{ short_url }}</span>
+                                <i class="fas fa-copy copy-button" onclick="copyToClipboard()"></i>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+        function copyToClipboard() {
+            const shortUrl = document.getElementById('shortUrl').textContent;
+            navigator.clipboard.writeText(shortUrl).then(() => {
+                const copyButton = document.querySelector('.copy-button');
+                copyButton.classList.remove('fa-copy');
+                copyButton.classList.add('fa-check');
+                setTimeout(() => {
+                    copyButton.classList.remove('fa-check');
+                    copyButton.classList.add('fa-copy');
+                }, 2000);
+            });
+        }
+
+        $('#shortenForm').on('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const button = $(this).find('button');
+            button.find('.normal-state').hide(); // Hide the normal state
+            button.find('.loading').show(); // Show loading spinner
+
+            $.ajax({
+                url: $(this).attr('action'), // Use form's action URL
+                method: 'POST',
+                data: {
+                    original_url: $(this).find('input[name="original_url"]').val(), // Get value of input
+                    csrfmiddlewaretoken: $(this).find('input[name="csrfmiddlewaretoken"]').val(), // CSRF token
+                },
+                success: function(response) {
+                    button.find('.loading').hide(); // Hide loading spinner
+                    button.find('.normal-state').show(); // Show normal state
+                    $('#shortUrl').text(response.short_url); // Update short URL display
+                },
+                error: function(xhr) {
+                    alert('Error creating short URL. Please try again.');
+                    button.find('.normal-state').show(); // Show normal state
+                    button.find('.loading').hide(); // Hide loading spinner
+                }
+            });
+        });
+    </script>
+</body>
+</html>

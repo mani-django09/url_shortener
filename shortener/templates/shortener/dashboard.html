@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Shortener Dashboard</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
+            min-height: 100vh;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="gradient-bg">
+    <div class="container py-5">
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h3>{{ urls.count }}</h3>
+                        <p>Total URLs</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h3>{{ urls|sum:'clicks' }}</h3>
+                        <p>Total Clicks</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h3>{{ urls|last_24h_clicks }}</h3>
+                        <p>Clicks (24h)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h5>Your Shortened URLs</h5>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Original URL</th>
+                    <th>Short URL</th>
+                    <th>Clicks</th>
+                    <th>Created</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for url in urls %}
+                <tr>
+                    <td>{{ url.original_url }}</td>
+                    <td>{{ request.scheme }}://{{ request.get_host }}/{{ url.short_code }}</td>
+                    <td>{{ url.clicks }}</td>
+                    <td>{{ url.created_at|date:"M d, Y" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
