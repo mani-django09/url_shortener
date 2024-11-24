@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-9a%82*#*op7et2#%zfw5659!!=sc1m3o4l+&#w$b%_kosxnh(i
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'bitly.works']
 
 
 # Application definition
@@ -40,7 +40,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'shortener',
     'rest_framework',
+    'django.contrib.sitemaps',
+    'django.contrib.humanize',
+    'django.contrib.sites',
+
 ]
+SITE_ID = 1
+
+GOOGLE_ANALYTICS_ID = 'G-FESE6FB3S5'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -65,6 +72,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'shortener.context_processors.google_analytics',
+
             ],
         },
     },
@@ -118,9 +127,29 @@ APPEND_SLASH = False
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # Gmail SMTP server
+EMAIL_PORT = 587  # Gmail SMTP port
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'manikant007y@gmail.com'  # Your Gmail address
+DEFAULT_FROM_EMAIL = 'manikant007y@gmail.com'
+EMAIL_HOST_PASSWORD = 'anmw wdqx xdye oxlh'  # Your Gmail app password
+#EMAIL_HOST_PASSWORD = 'scqouuyigokzkbmp'  # Your Gmail app password
+#EMAIL_HOST_PASSWORD = 'vzcqzihkuoyfygof'    # Your Gmail App Password
+
+# Additional settings
+ADMIN_EMAIL = 'manikant007y@gmail.com'  # Email where you want to receive contact form messages
+
+

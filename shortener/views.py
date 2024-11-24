@@ -11,7 +11,17 @@ from .serializers import URLSerializer
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import ActivityLog
+from .models import Link
+from django.template.loader import render_to_string
+from django.conf import settings
+from django.core.mail import send_mail, EmailMessage
+from django.views.decorators.http import require_http_methods
+import logging
+from django.template.loader import render_to_string
+from django.utils.timezone import now
 
+
+logger = logging.getLogger(__name__)
 
 CUSTOM_DOMAIN = "bitly.works"
 
@@ -84,3 +94,144 @@ def shorten_url(request):
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
 
+
+def l_d_view(request):
+    return render(request, 'shortener/l_d.html')
+
+
+@require_http_methods(["GET", "POST"])
+def contact_view(request):
+    if request.method == "POST":
+        try:
+            # Get form data
+            first_name = request.POST.get('firstName')
+            last_name = request.POST.get('lastName')
+            email = request.POST.get('email')
+            subject = request.POST.get('subject')
+            message = request.POST.get('message')
+
+            # Compose email message
+            email_subject = f'New Contact Form Submission: {subject}'
+            email_message = f"""
+New Contact Form Submission
+
+From: {first_name} {last_name}
+Email: {email}
+Subject: {subject}
+
+Message:
+{message}
+            """
+
+            # Send email
+            send_mail(
+                subject=email_subject,
+                message=email_message,
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=[settings.ADMIN_EMAIL],
+                fail_silently=False,
+            )
+
+            # Send confirmation email to user
+            confirmation_message = f"""
+Dear {first_name},
+
+Thank you for contacting us. We have received your message and will get back to you soon.
+
+Best regards,
+URL Shortener Team
+            """
+            
+            send_mail(
+                subject='Thank you for contacting us',
+                message=confirmation_message,
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=[email],
+                fail_silently=False,
+            )
+
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Your message has been sent successfully! We will get back to you soon.'
+            })
+            
+        except Exception as e:
+            logger.error(f"Error sending email: {str(e)}")
+            return JsonResponse({
+                'status': 'error',
+                'message': f'Failed to send message. Error: {str(e)}'
+            }, status=500)
+
+    # If GET request, just render the form
+    return render(request, 'includes/contact.html')
+
+@csrf_exempt  # Only for testing, remove in production
+def contact_submit(request):
+    if request.method == 'POST':
+        # Get form data
+        first_name = request.POST.get('firstName')
+        last_name = request.POST.get('lastName')
+        email = request.POST.get('email')
+        subject = request.POST.get('subject')
+        message = request.POST.get('message')
+
+        try:
+            # Email content
+            email_body = f"""
+            New Contact Form Submission
+            
+            From: {first_name} {last_name}
+            Email: {email}
+            Subject: {subject}
+            
+            Message:
+            {message}
+            """
+
+            # Send email
+            email = EmailMessage(
+                f'Contact Form: {subject}',
+                email_body,
+                'your-email@gmail.com',  # Replace with your email
+                ['your-email@gmail.com'],  # Replace with your email
+                reply_to=[email]
+            )
+            email.send()
+
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Thank you for your message. We will get back to you soon!'
+            })
+        except Exception as e:
+            print(f"Error sending email: {str(e)}")  # For debugging
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Sorry, there was an error sending your message.'
+            }, status=500)
+
+    return JsonResponse({'message': 'Invalid request method'}, status=400)
+
+def terms_view(request):
+    return render(request, 'includes/terms.html')
+
+def privacy_view(request):
+    return render(request, 'includes/privacy.html')
+
+
+def sitemap_view(request):
+    """Generate the sitemap.xml file"""
+    date = now().strftime('%Y-%m-%d')
+    content = render_to_string('sitemap.xml', {'date': date})
+    return HttpResponse(content, content_type='application/xml')
+
+def robots_txt(request):
+    """Generate the robots.txt file"""
+    host = request.get_host()
+    content = f"""User-agent: *
+Allow: /
+Disallow: /admin/
+
+# Sitemap
+Sitemap: http://{host}/sitemap.xml
+"""
+    return HttpResponse(content, content_type='text/plain')

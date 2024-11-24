@@ -1,0 +1,259 @@
+{% extends 'base.html' %}
+
+{% block title %}Contact Us - URL Shortener{% endblock %}
+
+{% block content %}
+<div class="contact-wrapper py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-body p-4">
+                        <h4 class="text-center mb-4">Send us a message</h4>
+                        <form id="contactForm" method="POST">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">First Name</label>
+                                    <input type="text" class="form-control" name="firstName" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Last Name</label>
+                                    <input type="text" class="form-control" name="lastName" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" name="email" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Subject</label>
+                                <select class="form-select" name="subject" required>
+                                    <option value="">Select a subject</option>
+                                    <option value="general">General Inquiry</option>
+                                    <option value="support">Technical Support</option>
+                                    <option value="billing">Billing Question</option>
+                                    <option value="partnership">Partnership Opportunity</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Message</label>
+                                <textarea class="form-control" name="message" rows="5" required></textarea>
+                            </div>
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary px-5">
+                                    <span class="normal-state">
+                                        <i class="fas fa-paper-plane me-2"></i>Send Message
+                                    </span>
+                                    <span class="loading" style="display: none;">
+                                        <i class="fas fa-spinner fa-spin me-2"></i>Sending...
+                                    </span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+            <!-- Map and Additional Info -->
+            
+                
+
+<style>
+.contact-wrapper {
+    background-color: #f8f9fa;
+}
+
+.contact-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 15px;
+    text-align: center;
+    height: 100%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.contact-card:hover {
+    transform: translateY(-5px);
+}
+
+.icon-wrapper {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4a90e2 0%, #5c6bc0 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    font-size: 24px;
+}
+
+.map-container {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.business-hours li {
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.business-hours li:last-child {
+    border-bottom: none;
+}
+
+.social-links {
+    gap: 1rem;
+}
+
+.social-link {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    transition: transform 0.3s ease;
+}
+
+.social-link:hover {
+    transform: translateY(-3px);
+    color: white;
+}
+
+.social-link.facebook {
+    background: #1877f2;
+}
+
+.social-link.twitter {
+    background: #1da1f2;
+}
+
+.social-link.linkedin {
+    background: #0a66c2;
+}
+
+.social-link.instagram {
+    background: #e4405f;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 0.2rem rgba(74, 144, 226, 0.25);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #4a90e2 0%, #5c6bc0 100%);
+    border: none;
+    padding: 10px 25px;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #357abd 0%, #4a569d 100%);
+}
+
+@media (max-width: 768px) {
+    .contact-card {
+        margin-bottom: 1rem;
+    }
+}
+</style>
+
+<script>
+    $(document).ready(function() {
+        $('#contactForm').on('submit', function(e) {
+            e.preventDefault();
+            
+            const form = $(this);
+            const submitBtn = form.find('button[type="submit"]');
+            const normalState = submitBtn.find('.normal-state');
+            const loadingState = submitBtn.find('.loading');
+            
+            // Show loading state
+            normalState.hide();
+            loadingState.show();
+            submitBtn.prop('disabled', true);
+            
+            // Get the CSRF token
+            const csrftoken = $('[name=csrfmiddlewaretoken]').val();
+            
+            $.ajax({
+                type: 'POST',
+                url: '{% url "contact" %}',
+                data: form.serialize(),
+                headers: {
+                    'X-CSRFToken': csrftoken
+                },
+                success: function(response) {
+                    if (response.status === 'success') {
+                        // Show success message
+                        alert(response.message);
+                        // Reset form
+                        form[0].reset();
+                    } else {
+                        alert('Error sending message. Please try again.');
+                    }
+                },
+                error: function() {
+                    alert('Error sending message. Please try again.');
+                },
+                complete: function() {
+                    // Reset button state
+                    loadingState.hide();
+                    normalState.show();
+                    submitBtn.prop('disabled', false);
+                }
+            });
+        });
+    });
+    </script>
+    
+    <style>
+    .contact-wrapper {
+        background-color: #f8f9fa;
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #4a90e2 0%, #5c6bc0 100%);
+        border: none;
+        padding: 12px 30px;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #357abd 0%, #4a569d 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .form-control:focus, 
+    .form-select:focus {
+        border-color: #4a90e2;
+        box-shadow: 0 0 0 0.2rem rgba(74, 144, 226, 0.25);
+    }
+    
+    .card {
+        border: none;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    }
+    
+    .loading {
+        display: none;
+    }
+    
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+</script>
+{% endblock %}

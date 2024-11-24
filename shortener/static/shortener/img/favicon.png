@@ -1,0 +1,19 @@
+from PIL import Image, ImageDraw, ImageFont
+import os
+
+def create_favicon():
+    # Create a new image with a blue background
+    img = Image.new('RGB', (32, 32), '#4a90e2')
+    draw = ImageDraw.Draw(img)
+    
+    # Add text
+    try:
+        font = ImageFont.truetype('arial.ttf', 24)
+    except:
+        font = ImageFont.load_default()
+    
+    # Draw 'B' in the center
+    draw.text((16, 16), 'B', fill='white', font=font, anchor='mm')
+    
+    # Save the image
+    img.save('static/shortener/img/favicon.png')

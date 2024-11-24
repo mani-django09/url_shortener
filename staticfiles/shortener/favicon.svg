@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+    <!-- Background Circle -->
+    <circle cx="16" cy="16" r="16" fill="#4a90e2"/>
+    
+    <!-- Link Icon -->
+    <path d="M16.5 10.5l1.5-1.5c1.5-1.5 4-1.5 5.5 0s1.5 4 0 5.5l-3 3c-1.5 1.5-4 1.5-5.5 0" 
+          stroke="white" 
+          stroke-width="2" 
+          fill="none" 
+          stroke-linecap="round"/>
+    
+    <path d="M15.5 21.5l-1.5 1.5c-1.5 1.5-4 1.5-5.5 0s-1.5-4 0-5.5l3-3c1.5-1.5 4-1.5 5.5 0" 
+          stroke="white" 
+          stroke-width="2" 
+          fill="none" 
+          stroke-linecap="round"/>
+</svg>

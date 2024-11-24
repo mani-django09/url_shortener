@@ -15,51 +15,87 @@
         -webkit-text-fill-color: transparent;
     }
     .feature-card {
-        transition: transform 0.3s ease;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
         cursor: pointer;
+        overflow: hidden;
     }
     .feature-card:hover {
         transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
     }
-    .copy-button {
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-    .copy-button:hover {
-        color: #4a90e2;
-    }
-    .loading {
-        display: none;
-        width: 20px;
-        height: 20px;
-        border: 2px solid #f3f3f3;
-        border-top: 2px solid #4a90e2;
+    .feature-card .icon-wrapper {
+        width: 60px;
+        height: 60px;
         border-radius: 50%;
-        animation: spin 1s linear infinite;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        background: linear-gradient(135deg, #4a90e2 0%, #5c6bc0 100%);
+        color: white;
     }
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+    .about-section {
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        border-radius: 15px;
+        padding: 2rem;
+        margin: 2rem 0;
     }
-    .status-message {
-        display: none;
-        margin-top: 10px;
-        font-weight: bold;
+    .stats-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        text-align: center;
+        transition: transform 0.3s ease;
     }
-    .social-share {
-        color: #6c757d;
-        font-size: 20px;
-        transition: color 0.3s ease;
-    }
-    .social-share:hover {
-        color: #4a90e2;
+    .stats-card:hover {
+        transform: translateY(-3px);
     }
     .faq-item {
         background: white;
         border-radius: 10px;
-        padding: 15px;
-        margin-bottom: 15px;
+        padding: 1rem;
+        margin-bottom: 1rem;
         box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .faq-item:hover {
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .faq-answer {
+        display: none;
+        padding-top: 1rem;
+        border-top: 1px solid #eee;
+        margin-top: 1rem;
+    }
+    .testimonial-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin: 1rem 0;
+    }
+    .testimonial-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        margin-bottom: 1rem;
+    }
+    .pricing-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        text-align: center;
+        transition: transform 0.3s ease;
+    }
+    .pricing-card:hover {
+        transform: translateY(-5px);
+    }
+    .usage-stats {
+        background: linear-gradient(135deg, #4a90e2 0%, #5c6bc0 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 15px;
+        margin: 2rem 0;
     }
 </style>
 {% endblock %}
@@ -72,7 +108,7 @@
             <div class="card mb-4">
                 <div class="card-body text-center">
                     <h1 class="gradient-text mb-3">URL Shortener</h1>
-                    <p class="text-muted mb-4">Transform your long URLs into concise, shareable links</p>
+                    <p class="text-muted mb-4">Transform your long URLs into concise, shareable links with advanced tracking capabilities</p>
                     
                     <!-- URL Input Form -->
                     <form id="shortenForm">
@@ -89,46 +125,77 @@
                         </div>
                     </form>
 
-                    <!-- Status Messages -->
-                    <div class="status-message" id="statusMessage">Generating...</div>
-
                     <!-- Result Display -->
-                    <div id="result" class="alert alert-success mt-4" style="display: none;">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <a id="shortUrl" href="#" target="_blank"></a>
-                            <i class="fas fa-copy copy-button" onclick="copyToClipboard()"></i>
+                    <div id="result" style="display: none;">
+                        <div class="alert alert-success mt-4">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <a id="shortUrl" class="btn btn-link text-primary p-0" style="font-size: 16px; text-decoration: underline;" onclick="window.open(this.href, '_blank'); return false;">
+                                        <!-- URL will be inserted here -->
+                                    </a>
+                                    <i class="fas fa-copy copy-button ml-3" onclick="copyToClipboard()"></i>
+                            </div>
                         </div>
-                        <button class="btn btn-secondary mt-2" onclick="shareLink()">Share</button>
+                        <div class="mt-3">
+                            <button class="btn btn-secondary mr-2" onclick="shareLink()">
+                                <i class="fas fa-share-alt mr-2"></i>Share
+                            </button>
+                            <button class="btn btn-info" onclick="resetForm()">
+                                <i class="fas fa-plus mr-2"></i>Shorten Another
+                            </button>
+                        </div>
+                    </div>                    
+                </div>
+            </div>
+
+            <!-- Intro Content -->
+            <div class="intro-content mb-5">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="mb-4">Simple and fast URL shortener!</h2>
+                        <p class="mb-4">
+                            <a href="https://bitly.works/" class="keyword-link" title="Bitly - Professional URL Shortener">Bitly</a> allows users to short their long links from 
+                            <a href="https://www.facebook.com" class="text-primary" target="_blank" rel="nofollow noopener noreferrer" title="Shorten Facebook URLs">Facebook</a>, 
+                            <a href="https://www.youtube.com" class="text-primary" target="_blank" rel="nofollow noopener noreferrer" title="Shorten YouTube URLs">YouTube</a>, 
+                            <a href="https://www.instagram.com" class="text-primary" target="_blank" rel="nofollow noopener noreferrer" title="Shorten Instagram URLs">Instagram</a>, 
+                            <a href="https://www.tiktok.com" class="text-primary" target="_blank" rel="nofollow noopener noreferrer" title="Shorten TikTok URLs">TikTok</a>, 
+                            blogs and from any websites. Just paste your long URL and click the Shorten button. Our url shortener will generate a shortened URL that you can share on websites, chat and emails. After shortening the long URL, you can track how many clicks it received.
+                        </p>
+            
+                        <h2 class="mb-4">Shorten, share and track</h2>
+                        <p class="mb-4">
+                            As the best <a href="https://bitly.works/" class="keyword-link" title="Professional URL Shortening Service">URL shortener</a>, you can use your shortened URLs in publications, documents, ads, blogs, forums, instant messages, and more. <a href="https://bitly.works/" class="keyword-link" title="Bitly URL Management Platform">Bitly</a> helps you keep track of how your links are performing by monitoring the number of clicks with our click counter-perfect for tracking stats for your business or projects.
+                        </p>
                     </div>
+                </div>
+            </div>
 
-                    <!-- Shorten Another Button -->
-                    <button id="shortenAnother" class="btn btn-info mt-2" style="display: none;" onclick="resetForm()">
-                        Shorten another URL
-                    </button>
-
-                    <!-- Dynamic Content -->
-                    <div id="dynamicContent" class="mt-4 text-muted"></div>
-
-                    <!-- Social Share Section -->
-                    <div class="mt-4">
-                        <p class="text-muted">Share your shortened URL via:</p>
-                        <div class="d-flex justify-content-center gap-3">
-                            <a href="#" class="social-share mx-2"><i class="fab fa-twitter"></i></a>
-                            <a href="#" class="social-share mx-2"><i class="fab fa-facebook"></i></a>
-                            <a href="#" class="social-share mx-2"><i class="fab fa-linkedin"></i></a>
-                            <a href="#" class="social-share mx-2"><i class="fas fa-envelope"></i></a>
-                        </div>
+            <!-- Usage Stats -->
+            <div class="usage-stats text-center mb-5">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h3 class="mb-2">1M+</h3>
+                        <p class="mb-0">Links Shortened</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h3 class="mb-2">5M+</h3>
+                        <p class="mb-0">Monthly Clicks</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h3 class="mb-2">100K+</h3>
+                        <p class="mb-0">Active Users</p>
                     </div>
                 </div>
             </div>
 
             <!-- Feature Cards -->
-            <div class="row">
+            <div class="row mb-5">
                 <div class="col-md-4 mb-4">
                     <div class="card feature-card h-100">
                         <div class="card-body text-center">
-                            <i class="fas fa-bolt text-primary mb-3 fa-2x"></i>
-                            <h5>Fast & Secure</h5>
+                            <div class="icon-wrapper mb-3">
+                                <i class="fas fa-bolt fa-lg"></i>
+                            </div>
+                            <h5>Lightning Fast</h5>
                             <p class="text-muted small">Generate shortened URLs instantly with enterprise-grade security</p>
                         </div>
                     </div>
@@ -136,151 +203,449 @@
                 <div class="col-md-4 mb-4">
                     <div class="card feature-card h-100">
                         <div class="card-body text-center">
-                            <i class="fas fa-chart-line text-primary mb-3 fa-2x"></i>
-                            <h5>Analytics</h5>
-                            <p class="text-muted small">Track clicks and monitor your link's performance</p>
+                            <div class="icon-wrapper mb-3">
+                                <i class="fas fa-chart-line fa-lg"></i>
+                            </div>
+                            <h5>Advanced Analytics</h5>
+                            <p class="text-muted small">Track clicks, locations, and devices in real-time</p>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4 mb-4">
                     <div class="card feature-card h-100">
                         <div class="card-body text-center">
-                            <i class="fas fa-link text-primary mb-3 fa-2x"></i>
+                            <div class="icon-wrapper mb-3">
+                                <i class="fas fa-link fa-lg"></i>
+                            </div>
                             <h5>Custom Links</h5>
-                            <p class="text-muted small">Create branded short links with your own domain</p>
+                            <p class="text-muted small">Create branded short links with your domain</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body text-center">
+                            <div class="icon-wrapper mb-3">
+                                <i class="fas fa-shield-alt fa-lg"></i>
+                            </div>
+                            <h5>Secure Links</h5>
+                            <p class="text-muted small">SSL encryption and malware protection included</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body text-center">
+                            <div class="icon-wrapper mb-3">
+                                <i class="fas fa-history fa-lg"></i>
+                            </div>
+                            <h5>Link History</h5>
+                            <p class="text-muted small">Access and manage all your shortened URLs</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body text-center">
+                            <div class="icon-wrapper mb-3">
+                                <i class="fas fa-mobile-alt fa-lg"></i>
+                            </div>
+                            <h5>Mobile Friendly</h5>
+                            <p class="text-muted small">Optimize links for mobile devices</p>
                         </div>
                     </div>
                 </div>
             </div>
-            
-            <!-- FAQ Section -->
-            <div class="mt-5">
-                <h5 class="text-center mb-4">Frequently Asked Questions</h5>
-                <div id="faqList" class="mt-3"></div>
+
+            <!-- About Section -->
+            <div class="about-section mb-5">
+                <h3 class="text-center mb-4">About Our URL Shortener</h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5><i class="fas fa-rocket mr-2 text-primary"></i>Our Mission</h5>
+                        <p class="text-muted">We're dedicated to simplifying link sharing while providing powerful analytics and tracking capabilities. Our platform helps businesses and individuals manage their online presence effectively.</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h5><i class="fas fa-star mr-2 text-primary"></i>Why Choose Us</h5>
+                        <ul class="text-muted">
+                            <li>Enterprise-grade security</li>
+                            <li>99.9% uptime guarantee</li>
+                            <li>24/7 customer support</li>
+                            <li>Customizable short URLs</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
-</div>
+
+            <!-- FAQ Section -->
+            <div class="mb-5">
+                <h3 class="text-center mb-4">Frequently Asked Questions</h3>
+                <div id="faqAccordion">
+                    <!-- FAQs will be dynamically populated here -->
+                </div>
+            </div>
+
+            <!-- Testimonials -->
+            
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    $(document).ready(function() {
-        // Change background color function
-        function changeBackgroundColor() {
-            const colors = ['#f5f7fa', '#e4e9f2', '#d0e9f0', '#f9f9c5'];
-            const randomColor = colors[Math.floor(Math.random() * colors.length)];
-            $('.gradient-bg').css('background-color', randomColor);
+$(document).ready(function() {
+    // Dynamic FAQ population
+    const faqs = [
+        {
+            question: "How does URL shortening work?",
+            answer: "Our URL shortener uses advanced algorithms to convert long URLs into short, memorable links while maintaining reliability and security. Each shortened URL is unique and redirects to your original long URL."
+        },
+        {
+            question: "Is there a limit to how many URLs I can shorten?",
+            answer: "Free users can shorten up to 50 URLs per day. Premium users get unlimited URL shortening along with advanced analytics and custom branded domains."
+        },
+        {
+            question: "Are the shortened URLs permanent?",
+            answer: "Yes, our shortened URLs never expire and will remain active as long as you maintain your account with us. Premium users also get the ability to set custom expiration dates."
+        },
+        {
+            question: "Can I customize my shortened URLs?",
+            answer: "Yes! Premium users can create custom branded links using their own domain name and choose custom URL slugs for better brand recognition and memorability."
+        },
+        {
+            question: "How can I track my shortened URLs?",
+            answer: "Our analytics dashboard provides detailed insights including click counts, geographic location of clicks, referring websites, and device types. Premium users get access to advanced analytics with real-time data."
+        },
+        {
+            question: "Is the service secure?",
+            answer: "Absolutely! We use industry-standard SSL encryption, regularly scan for malware, and implement various security measures to protect both link creators and users."
         }
+    ];
 
-        // Dynamic content
-        function addDynamicContent() {
-            const dynamicParagraph = `<p class="text-muted">This URL shortener helps you manage your links efficiently. You can create short, shareable URLs and track their performance.</p>`;
-            $('#dynamicContent').html(dynamicParagraph);
+    const faqHtml = faqs.map((faq, index) => `
+        <div class="faq-item" onclick="toggleFaq(${index})">
+            <div class="d-flex justify-content-between align-items-center">
+                <h6 class="mb-0 font-weight-bold">${faq.question}</h6>
+                <i class="fas fa-chevron-down" id="faqIcon${index}"></i>
+            </div>
+            <div class="faq-answer" id="faqAnswer${index}">
+                <p class="mb-0 text-muted">${faq.answer}</p>
+            </div>
+        </div>
+    `).join('');
+    
+    $('#faqAccordion').html(faqHtml);
 
-            const faqs = [
-                { question: "How does URL shortening work?", 
-                  answer: "URL shortening converts long URLs into shorter versions, making them easier to share." },
-                { question: "Is there a limit to how many URLs I can shorten?", 
-                  answer: "No, you can shorten as many URLs as you like!" },
-                { question: "Can I customize my shortened URL?", 
-                  answer: "Yes, you can create custom links with your own domain." },
-                { question: "How can I track my shortened URLs?", 
-                  answer: "You can track clicks and performance analytics from your dashboard." }
-            ];
-
-            let faqHtml = '';
-            faqs.forEach(faq => {
-                faqHtml += `
-                    <div class="faq-item">
-                        <h6 class="font-weight-bold">${faq.question}</h6>
-                        <p class="text-muted mb-0">${faq.answer}</p>
-                    </div>`;
-            });
-            $('#faqList').html(faqHtml);
-        }
-
-        // Initialize
-        changeBackgroundColor();
-        addDynamicContent();
-
-        // Form submission
-        $('#shortenForm').on('submit', function(event) {
-            event.preventDefault();
-
-            const formData = $(this).serialize();
-            const button = $(this).find('button');
-            const loadingSpinner = $('#loadingSpinner');
-            const statusMessage = $('#statusMessage');
-
-            loadingSpinner.show(); 
-            statusMessage.show(); 
-            button.prop('disabled', true);
-
-            $.ajax({
-                type: 'POST',
-                url: '{% url "shorten_url" %}',
-                data: formData,
-                success: function(response) {
-                    $('#shortUrl').text(response.short_url);
-                    $('#shortUrl').attr('href', response.short_url);
-                    $('#result').show();
-                    $('#shortenAnother').show();
-                },
-                error: function(xhr) {
-                    $('#statusMessage').text('Error creating short URL. Please check the URL format and try again.')
-                        .addClass('text-danger').show();
-                },
-                complete: function() {
-                    loadingSpinner.hide();
-                    statusMessage.hide();
-                    button.prop('disabled', false);
-                }
-            });
-        });
-
-        // URL click handling
-        $('#shortUrl').on('click', function(event) {
-            event.preventDefault();
-            const shortUrl = $(this).attr('href');
-            window.open(shortUrl, '_blank');
+    // Dynamic Testimonials
+    
+    // Form submission handler with enhanced feedback
+    $('#shortenForm').on('submit', function(event) {
+        event.preventDefault();
+        const formData = $(this).serialize();
+        
+        $.ajax({
+            type: 'POST',
+            url: '{% url "shorten_url" %}',
+            data: formData,
+            success: function(response) {
+                const shortUrl = response.short_url;
+                
+                // Clear input
+                $('input[name="original_url"]').val('');
+                
+                // Update shortUrl element
+                const shortUrlElement = $('#shortUrl');
+                shortUrlElement.text(shortUrl);
+                shortUrlElement.attr('href', shortUrl);
+                
+                // Show result container
+                $('#result').fadeIn(300);
+                showNotification('URL shortened successfully!', 'success');
+            },
+            error: function(xhr) {
+                showNotification('Error creating short URL. Please check the URL format and try again.', 'error');
+            }
         });
     });
+    function handleShortUrlClick(url) {
+        window.open(url, '_blank');
+    }
+    // Initialize tooltips
+    $('[data-toggle="tooltip"]').tooltip();
 
-    // Copy to clipboard function
-    function copyToClipboard() {
-        const shortUrl = document.getElementById('shortUrl').textContent;
-        navigator.clipboard.writeText(shortUrl).then(() => {
-            const copyButton = document.querySelector('.copy-button');
-            copyButton.classList.remove('fa-copy');
-            copyButton.classList.add('fa-check');
-            setTimeout(() => {
-                copyButton.classList.remove('fa-check');
-                copyButton.classList.add('fa-copy');
-            }, 2000);
+    // Initialize copy-to-clipboard functionality
+    new ClipboardJS('.copy-button');
+});
+
+// FAQ toggle function
+function toggleFaq(index) {
+    const answer = $(`#faqAnswer${index}`);
+    const icon = $(`#faqIcon${index}`);
+    
+    $('.faq-answer').not(answer).slideUp();
+    $('.fa-chevron-up').not(icon).removeClass('fa-chevron-up').addClass('fa-chevron-down');
+    
+    answer.slideToggle();
+    icon.toggleClass('fa-chevron-down fa-chevron-up');
+}
+
+// Copy to clipboard function with enhanced feedback
+function copyToClipboard() {
+    const shortUrl = document.getElementById('shortUrl').textContent;
+    navigator.clipboard.writeText(shortUrl).then(() => {
+        const copyButton = document.querySelector('.copy-button');
+        copyButton.classList.remove('fa-copy');
+        copyButton.classList.add('fa-check');
+        
+        showNotification('Link copied to clipboard!', 'success');
+        
+        setTimeout(() => {
+            copyButton.classList.remove('fa-check');
+            copyButton.classList.add('fa-copy');
+        }, 2000);
+    }).catch(() => {
+        showNotification('Failed to copy link. Please try again.', 'error');
+    });
+}
+
+// Share link function with enhanced sharing options
+function shareLink() {
+    const shortUrl = document.getElementById('shortUrl').textContent;
+    const shareData = {
+        title: 'Check out this link!',
+        text: 'I shortened this URL using our awesome URL shortener!',
+        url: shortUrl
+    };
+
+    if (navigator.share) {
+        navigator.share(shareData)
+            .then(() => showNotification('Thanks for sharing!', 'success'))
+            .catch((error) => {
+                if (error.name !== 'AbortError') {
+                    showNotification('Error sharing link', 'error');
+                }
+            });
+    } else {
+        // Fallback for browsers that don't support native sharing
+        const socialShare = document.createElement('div');
+        socialShare.innerHTML = `
+            <div class="social-share-popup">
+                <a href="https://twitter.com/intent/tweet?url=${encodeURIComponent(shortUrl)}" target="_blank" class="btn btn-twitter">
+                    <i class="fab fa-twitter"></i> Twitter
+                </a>
+                <a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shortUrl)}" target="_blank" class="btn btn-facebook">
+                    <i class="fab fa-facebook"></i> Facebook
+                </a>
+                <a href="https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(shortUrl)}" target="_blank" class="btn btn-linkedin">
+                    <i class="fab fa-linkedin"></i> LinkedIn
+                </a>
+                <a href="mailto:?body=${encodeURIComponent(shortUrl)}" class="btn btn-email">
+                    <i class="fas fa-envelope"></i> Email
+                </a>
+            </div>
+        `;
+        document.body.appendChild(socialShare);
+    }
+}
+
+// Reset form function with animation
+function resetForm() {
+    $('#shortenForm')[0].reset();
+    $('#result').fadeOut(300);
+    $('#shortUrl').text('');
+}
+
+// Show notification function
+function showNotification(message, type) {
+    const notification = $(`
+        <div class="notification notification-${type}">
+            <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+            ${message}
+        </div>
+    `).appendTo('body');
+
+    setTimeout(() => {
+        notification.fadeOut(300, function() {
+            $(this).remove();
         });
+    }, 3000);
+}
+
+// Update stats counter function
+function updateStatsCounter() {
+    const counters = document.querySelectorAll('.usage-stats h3');
+    counters.forEach(counter => {
+        const target = parseInt(counter.innerText.replace(/\D/g, ''));
+        let count = target - 100;
+        const increment = () => {
+            if (count < target) {
+                count += 5;
+                counter.innerText = count.toLocaleString() + '+';
+                setTimeout(increment, 20);
+            }
+        };
+        increment();
+    });
+}
+
+
+// Add smooth scrolling for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+            behavior: 'smooth'
+        });
+    });
+});
+
+// Add dynamic background color change on scroll
+window.addEventListener('scroll', function() {
+    const scrolled = window.scrollY;
+    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    const scrollPercentage = (scrolled / maxScroll) * 100;
+    
+    document.querySelector('.gradient-bg').style.background = 
+        `linear-gradient(135deg, 
+            hsl(${scrollPercentage}, 70%, 90%) 0%, 
+            hsl(${scrollPercentage + 40}, 70%, 90%) 100%)`;
+});
+
+// Add intersection observer for animation on scroll
+const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+};
+
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('animate-in');
+            observer.unobserve(entry.target);
+        }
+    });
+}, observerOptions);
+
+document.querySelectorAll('.feature-card, .testimonial-card, .faq-item').forEach(item => {
+    observer.observe(item);
+});
+</script>
+
+<!-- Additional CSS for notifications and animations -->
+<style>
+    #shortUrl {
+        color: #007bff !important;
+        cursor: pointer;
+        font-weight: 500;
+        word-break: break-all;
+        text-align: left;
+        display: block;
+        margin-right: 10px;
+    }
+    
+    #shortUrl:hover {
+        color: #0056b3 !important;
+        text-decoration: underline !important;
+    }
+    
+    .shortened-url-container {
+        background-color: #ffffff;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    
+    .copy-button {
+        cursor: pointer;
+        padding: 8px;
+        color: #6c757d;
+        transition: color 0.2s ease;
+    }
+    
+    .copy-button:hover {
+        color: #007bff;
+    }
+    
+    .alert-success {
+        background-color: #d4edda;
+        border-color: #c3e6cb;
     }
 
-    // Share link function
-    function shareLink() {
-        const shortUrl = document.getElementById('shortUrl').textContent;
-        if (navigator.share) {
-            navigator.share({
-                title: 'Check out this link!',
-                url: shortUrl,
-            })
-            .then(() => console.log('Share was successful.'))
-            .catch(error => console.log('Error sharing:', error));
-        } else {
-            alert('Sharing not supported on this browser.');
+    .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 25px;
+        border-radius: 8px;
+        color: white;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        animation: slideIn 0.3s ease-out;
+    }
+
+    .notification-success {
+        background-color: #28a745;
+    }
+
+    .notification-error {
+        background-color: #dc3545;
+    }
+
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
         }
     }
 
-    // Reset form function
-    function resetForm() {
-        $('#shortenForm')[0].reset();
-        $('#result').hide();
-        $('#shortenAnother').hide();
+    .animate-in {
+        animation: fadeInUp 0.6s ease-out forwards;
     }
-</script>
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .social-share-popup {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: white;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        display: flex;
+        gap: 10px;
+        z-index: 1000;
+        animation: slideUp 0.3s ease-out;
+    }
+
+    @keyframes slideUp {
+        from {
+            transform: translate(-50%, 100%);
+            opacity: 0;
+        }
+        to {
+            transform: translate(-50%, 0);
+            opacity: 1;
+        }
+    }
+
+    .btn-twitter { background: #1DA1F2; color: white; }
+    .btn-facebook { background: #4267B2; color: white; }
+    .btn-linkedin { background: #0077B5; color: white; }
+    .btn-email { background: #EA4335; color: white; }
+</style>
 {% endblock %}

@@ -1,0 +1,239 @@
+{% extends 'base.html' %}  <!-- Changed from shortener/base.html to base.html -->
+
+{% block title %}Terms of Service - URL Shortener{% endblock %}
+
+{% block content %}
+<div class="terms-wrapper py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card shadow-sm">
+                    <div class="card-body p-4 p-md-5">
+                        <h1 class="text-center mb-4">Terms of Service</h1>
+                        <div class="last-updated mb-4">
+                            <small class="text-muted">Last Updated: November 24, 2024</small>
+                        </div>
+
+                        <!-- Introduction -->
+                        <section class="mb-5">
+                            <h2 class="h4 mb-3">1. Introduction</h2>
+                            <p>Welcome to URL Shortener ("we," "our," or "us"). By accessing or using our URL shortening service, you agree to be bound by these Terms of Service ("Terms"). Please read these terms carefully before using our service.</p>
+                        </section>
+
+                        <!-- Services -->
+                        <section class="mb-5">
+                            <h2 class="h4 mb-3">2. Services</h2>
+                            <p>URL Shortener provides URL shortening services that allow users to create shortened versions of long URLs. Our service includes:</p>
+                            <ul class="service-list">
+                                <li>URL shortening</li>
+                                <li>Click tracking and analytics</li>
+                                <li>Custom URL options</li>
+                                <li>Link management tools</li>
+                            </ul>
+                        </section>
+
+                        <!-- Account Terms -->
+                        <section class="mb-5">
+                            <h2 class="h4 mb-3">3. User Responsibilities</h2>
+                            <p>When using our service, you agree to:</p>
+                            <ul>
+                                <li>Provide accurate and complete information</li>
+                                <li>Not use the service for any illegal purposes</li>
+                                <li>Not attempt to circumvent any security features</li>
+                                <li>Not upload or transmit malware or malicious code</li>
+                                <li>Not engage in spamming or abusive behavior</li>
+                            </ul>
+                        </section>
+
+                        <!-- Advertising -->
+                        <section class="mb-5">
+                            <h2 class="h4 mb-3">4. Advertising and Third-Party Content</h2>
+                            <p>Our service may include advertisements and third-party content:</p>
+                            <ul>
+                                <li>We will use Google AdSense to display advertisements on our website</li>
+                                <li>Third-party advertisements are subject to Google's advertising policies</li>
+                                <li>We are not responsible for third-party content or advertisements</li>
+                                <li>Your use of our service implies acceptance of Google's advertising practices</li>
+                                <li>Ad blockers may affect the functionality of our service</li>
+                            </ul>
+                        </section>
+
+                        <!-- Privacy -->
+                        <section class="mb-5">
+                            <h2 class="h4 mb-3">5. Privacy and Data Collection</h2>
+                            <p>We collect and use data in accordance with our Privacy Policy. This includes:</p>
+                            <ul>
+                                <li>Collection of user analytics and behavior data</li>
+                                <li>Use of cookies and similar tracking technologies</li>
+                                <li>Information sharing with advertising partners</li>
+                                <li>Data retention and security practices</li>
+                            </ul>
+                        </section>
+
+                        <!-- Prohibited Content -->
+                        <section class="mb-5">
+                            <h2 class="h4 mb-3">6. Prohibited Content</h2>
+                            <p>Users are prohibited from creating shortened URLs that link to:</p>
+                            <ul>
+                                <li>Illegal content or activities</li>
+                                <li>Malware or phishing websites</li>
+                                <li>Spam or scam content</li>
+                                <li>Adult or explicit material</li>
+                                <li>Content that violates intellectual property rights</li>
+                            </ul>
+                        </section>
+
+                        <section class="mb-5">
+                            <h2 class="h4 mb-3">7. Disclaimer</h2>
+                            <p>Please note that the free service provided by Bitly may have certain limitations, and we cannot guarantee that the Site or services will be uninterrupted, secure, or error-free. Neither the employees nor the owners of ShortURL will be held responsible for any errors, omissions, or any damage you may incur while using this Site.
+
+                                Due to the high volume of emails we receive, sometimes it could take some times to respond your message.</p>
+                            
+                        </section>
+
+                        <!-- Service Modifications -->
+                        <section class="mb-5">
+                            <h2 class="h4 mb-3">8. Service Modifications</h2>
+                            <p>We reserve the right to:</p>
+                            <ul>
+                                <li>Modify or discontinue services without notice</li>
+                                <li>Change terms of service with reasonable notice</li>
+                                <li>Remove content that violates these terms</li>
+                                <li>Suspend or terminate accounts for violations</li>
+                            </ul>
+                        </section>
+
+                        <!-- Liability -->
+                        <section class="mb-5">
+                            <h2 class="h4 mb-3">9. Limitation of Liability</h2>
+                            <p>URL Shortener is provided "as is" without warranties. We are not liable for:</p>
+                            <ul>
+                                <li>Service interruptions or downtime</li>
+                                <li>Loss of data or content</li>
+                                <li>Damages resulting from service use</li>
+                                <li>Third-party content or actions</li>
+                            </ul>
+                        </section>
+
+                        <!-- Contact Information -->
+                        <section class="mb-5">
+                            <h2 class="h4 mb-3">10. Contact Information</h2>
+                            <p>For questions about these Terms, please contact us at:</p>
+                            <ul>
+                                <li>Email: manikant007y@gmail.com</li>
+                                <li>Support: Help Center</li>
+                            </ul>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.terms-wrapper {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+    padding-top: 2rem;
+}
+
+.card {
+    border: none;
+    box-shadow: 0 0 20px rgba(0,0,0,0.05);
+}
+
+h1 {
+    color: #333;
+    font-weight: 600;
+}
+
+h2 {
+    color: #444;
+    font-weight: 600;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+section {
+    padding: 0.5rem 0;
+}
+
+ul {
+    padding-left: 1.2rem;
+}
+
+ul li {
+    margin-bottom: 0.5rem;
+    color: #666;
+}
+
+.last-updated {
+    text-align: center;
+    color: #888;
+}
+
+/* Print styles */
+@media print {
+    .card {
+        box-shadow: none;
+    }
+    
+    .terms-wrapper {
+        background-color: white;
+        padding: 0;
+    }
+    
+    section {
+        page-break-inside: avoid;
+    }
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 1.5rem !important;
+    }
+    
+    h1 {
+        font-size: 1.8rem;
+    }
+    
+    h2 {
+        font-size: 1.3rem;
+    }
+}
+</style>
+
+<script>
+$(document).ready(function() {
+    // Smooth scroll for anchor links
+    $('a[href^="#"]').on('click', function(e) {
+        e.preventDefault();
+        
+        const target = $(this.getAttribute('href'));
+        if(target.length) {
+            $('html, body').animate({
+                scrollTop: target.offset().top - 100
+            }, 500);
+        }
+    });
+    
+    // Add copy button for contact information
+    $('.contact-info').append(
+        '<button class="btn btn-sm btn-outline-primary copy-btn">Copy</button>'
+    );
+    
+    // Copy functionality
+    $('.copy-btn').on('click', function() {
+        const text = $(this).prev().text();
+        navigator.clipboard.writeText(text).then(() => {
+            $(this).text('Copied!');
+            setTimeout(() => {
+                $(this).text('Copy');
+            }, 2000);
+        });
+    });
+});
+</script>
+{% endblock %}
