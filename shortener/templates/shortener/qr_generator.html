@@ -1,0 +1,653 @@
+{% extends 'base.html' %}
+
+{% block title %}QR Code Generator - Bitly{% endblock %}
+
+{% block extra_css %}
+<style>
+    .qr-container {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .gradient-text {
+        background: linear-gradient(90deg, #4a90e2 0%, #5c6bc0 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
+    .qr-preview {
+        min-height: 250px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px dashed #e0e0e0;
+        border-radius: 10px;
+        margin: 20px 0;
+    }
+    
+    .qr-preview img {
+        max-width: 200px;
+        height: auto;
+    }
+    
+    .feature-card {
+        transition: transform 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .icon-wrapper {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #4a90e2 0%, #5c6bc0 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        color: white;
+    }
+
+    #loadingSpinner {
+        display: none;
+        width: 2rem;
+        height: 2rem;
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #4a90e2;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .color-picker-wrapper {
+        display: flex;
+        gap: 10px;
+        margin: 15px 0;
+    }
+
+    .color-option {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: transform 0.2s;
+    }
+
+    .color-option:hover {
+        transform: scale(1.1);
+    }
+
+    .color-option.selected {
+        border-color: #4a90e2;
+    }
+
+    .faq-section {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .faq-item {
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .faq-item:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .faq-question {
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .faq-question:hover {
+        background-color: #f8f9fa;
+    }
+
+    .faq-question h5 {
+        font-size: 1.1rem;
+        color: #2d3748;
+    }
+
+    .faq-answer {
+        border-top: 1px solid #edf2f7;
+        color: #4a5568;
+        transform-origin: top;
+        transition: all 0.3s ease;
+    }
+
+    .transition-transform {
+        transition: transform 0.3s ease;
+    }
+
+    .rotate-icon {
+        transform: rotate(180deg);
+    }
+
+    .faq-item.active .faq-question {
+        background-color: #f8f9fa;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .faq-answer.show {
+        animation: slideDown 0.3s ease forwards;
+    }
+
+    /* Add to your existing styles */
+.main-title {
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: #333;
+    line-height: 1.3;
+    margin-bottom: 1rem;
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    max-width: 800px;
+    margin: 0 auto;
+    color: #666;
+    line-height: 1.6;
+}
+
+/* Hero section spacing and responsive styles */
+@media (max-width: 768px) {
+    .main-title {
+        font-size: 2rem;
+    }
+    
+    .subtitle {
+        font-size: 1.1rem;
+        padding: 0 20px;
+    }
+}
+
+/* Optional: Add animation for the hero section */
+.main-title, .subtitle {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.8s ease forwards;
+}
+
+.subtitle {
+    animation-delay: 0.2s;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+.qr-preview {
+    min-height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed #e0e0e0;
+    border-radius: 10px;
+    margin: 20px 0;
+    padding: 20px;
+    background-color: #f8f9fa;
+    overflow: auto; /* Add scroll if QR code is too large */
+}
+
+.qr-preview img {
+    display: block;
+    object-fit: contain; /* Maintain aspect ratio */
+    max-width: 100%; /* Responsive but don't exceed container */
+    height: auto; /* Maintain aspect ratio */
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-5">
+                <h1 class="main-title mb-4">QR Code Generator - Create QR Codes for Free</h1>
+                <p class="subtitle lead text-muted">
+                Free online static and dynamic QR Code generator for any use case. Create free QR Codes in three simple steps. Make a QR Code, customize it, and track it with a free forever plan.
+                <p class="subtitle lead text-muted">
+                </p>
+
+            </div>
+
+            <div class="qr-container p-4 mb-4">
+                <form id="qrForm" class="mb-4">
+                    <div class="form-group">
+                        <label for="content">Enter URL or Text</label>
+                        <input type="text" class="form-control form-control-lg" id="content" 
+                               placeholder="Enter URL or text to generate QR code" required>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>QR Code Size</label>
+                                <select class="form-control" id="qrSize">
+                                    <option value="100">Small (100×100)</option>
+                                    <option value="200" selected>Medium (200×200)</option>
+                                    <option value="300">Large (300×300)</option>
+                                    <option value="400">Extra Large (400×400)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Error Correction Level</label>
+                                <select class="form-control" id="errorCorrection">
+                                    <option value="L">Low</option>
+                                    <option value="M" selected>Medium</option>
+                                    <option value="Q">High</option>
+                                    <option value="H">Very High</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+<!-- Add after container opening -->
+
+                    <div class="form-group">
+                        <label>QR Code Color</label>
+                        <div class="color-picker-wrapper">
+                            <div class="color-option selected" style="background-color: #000000" data-color="000000"></div>
+                            <div class="color-option" style="background-color: #4a90e2" data-color="4a90e2"></div>
+                            <div class="color-option" style="background-color: #27ae60" data-color="27ae60"></div>
+                            <div class="color-option" style="background-color: #e74c3c" data-color="e74c3c"></div>
+                            <div class="color-option" style="background-color: #8e44ad" data-color="8e44ad"></div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg btn-block">
+                        <span class="normal-state">Generate QR Code</span>
+                        <span id="loadingSpinner"></span>
+                    </button>
+                </form>
+
+                <div class="qr-preview" id="qrPreview">
+                    <p class="text-muted">Your QR code will appear here</p>
+                </div>
+
+                <div id="qrActions" style="display: none;" class="text-center">
+                    <button class="btn btn-success mr-2" onclick="downloadQR()">
+                        <i class="fas fa-download mr-2"></i>Download QR Code
+                    </button>
+                    <button class="btn btn-info" onclick="shareQR()">
+                        <i class="fas fa-share-alt mr-2"></i>Share
+                    </button>
+                </div>
+            </div>
+  <!-- How to Use Guide Section -->
+<div class="bg-gray-50 p-8 rounded-lg max-w-3xl mx-auto mt-12">
+    <div class="mb-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-4">How to Use the Free QR Code Generator</h2>
+        <p class="text-gray-700">
+            It's completely free and easy to use - no tricks or hidden fees. Just create as many QR codes as you need!
+        </p>
+    </div>
+
+    <!-- Steps Container -->
+    <div class="space-y-6">
+        <!-- Step 1 -->
+        <div class="mb-6">
+            <h4 class="text-xl font-bold text-gray-800 mb-2">Pick what to share</h3>
+            <p class="text-gray-700 ml-0">
+                Choose what you want to turn into a QR code - a website link, your phone number, or just some text.
+            </p>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="mb-6">
+            <h4 class="text-xl font-bold text-gray-800 mb-2">Type in your info</h3>
+            <p class="text-gray-700 ml-0">
+                Just paste your website link or type in your phone number - whatever you want to share.
+            </p>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="mb-6">
+            <h4 class="text-xl font-bold text-gray-800 mb-2">Style it</h3>
+            <p class="text-gray-700 ml-0">
+                Pick a color, choose how big you want it, and set the quality level. Make it look just right!
+            </p>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="mb-6">
+            <h4 class="text-xl font-bold text-gray-800 mb-2">Create and save</h3>
+            <p class="text-gray-700 ml-0">
+                Click generate, and your QR code is ready! Download it or share it right away.
+            </p>
+        </div>
+    </div>
+
+    <!-- What is a QR Code Section -->
+    <div class="mt-12">
+        <h2 class="text-3xl font-bold text-gray-800 mb-4">What is a QR Code?</h2>
+        <div class="space-y-4 text-gray-700">
+            <p>
+                You've probably seen <a href="https://bitly.works/qr-generator/" class="text-blue-600 hover:underline">QR codes</a> on menus or product packages - they're those square patterns that look like fancy barcodes. They're super useful for quickly sharing information with phones.
+            </p>
+            <p>
+                Using them is easy! Just open your phone's camera and point it at the QR code. Most phones will automatically detect it and show you what's inside - like a website link or contact info.
+            </p>
+            <p>
+                They're really handy for all sorts of things, from sharing your website to helping people connect to WiFi. Perfect for when you want to share something quickly!
+            </p>
+        </div>
+    </div>
+</div>
+            <!-- Features Section -->
+<div class="row mt-5">
+    <!-- First Row of Cards -->
+    <div class="col-md-4 mb-4">
+        <div class="card feature-card h-100">
+            <div class="card-body text-center">
+                <div class="icon-wrapper">
+                    <i class="fas fa-magic"></i>
+                </div>
+                <h5>Customizable</h5>
+                <p class="text-muted small">Choose size, colors, and error correction levels</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card feature-card h-100">
+            <div class="card-body text-center">
+                <div class="icon-wrapper">
+                    <i class="fas fa-download"></i>
+                </div>
+                <h5>Easy Download</h5>
+                <p class="text-muted small">Download your QR codes in high quality PNG format</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card feature-card h-100">
+            <div class="card-body text-center">
+                <div class="icon-wrapper">
+                    <i class="fas fa-share-alt"></i>
+                </div>
+                <h5>Instant Sharing</h5>
+                <p class="text-muted small">Share your QR codes directly with others</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Second Row of Cards -->
+    <div class="col-md-4 mb-4">
+        <div class="card feature-card h-100">
+            <div class="card-body text-center">
+                <div class="icon-wrapper">
+                    <i class="fas fa-qrcode"></i>
+                </div>
+                <h5>Dynamic QR Codes</h5>
+                <p class="text-muted small">Create editable QR codes that can be updated anytime</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card feature-card h-100">
+            <div class="card-body text-center">
+                <div class="icon-wrapper">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h5>Analytics & Tracking</h5>
+                <p class="text-muted small">Track scans and analyze performance of your QR codes</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card feature-card h-100">
+            <div class="card-body text-center">
+                <div class="icon-wrapper">
+                    <i class="fas fa-paint-brush"></i>
+                </div>
+                <h5>Custom Design</h5>
+                <p class="text-muted small">Add logos and customize colors to match your brand</p>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- FAQ Section -->
+<div class="faq-section mt-5">
+    <h2 class="text-center mb-4">Frequently Asked Questions</h2>
+    <div class="faq-container">
+        {% for faq in faqs %}
+        <div class="faq-item mb-3" data-faq-id="{{ forloop.counter }}">
+            <div class="faq-question d-flex justify-content-between align-items-center p-3 bg-white rounded cursor-pointer">
+                <h5 class="mb-0">{{ faq.question }}</h5>
+                <i class="fas fa-chevron-down transition-transform"></i>
+            </div>
+            <div class="faq-answer bg-white rounded-bottom p-3" style="display: none;">
+                <p class="mb-0">{{ faq.answer }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const faqItems = document.querySelectorAll('.faq-item');
+        const qrForm = document.getElementById('qrForm');
+        const colorOptions = document.querySelectorAll('.color-option');
+        let selectedColor = '000000';
+    
+        // Color picker functionality
+        colorOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                colorOptions.forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedColor = this.getAttribute('data-color');
+                if (document.querySelector('#qrPreview img')) {
+                    generateQRCode();
+                }
+            });
+        });
+    
+        // FAQ functionality
+        faqItems.forEach(item => {
+            const question = item.querySelector('.faq-question');
+            const answer = item.querySelector('.faq-answer');
+            const icon = item.querySelector('.fa-chevron-down');
+            
+            question.addEventListener('click', () => {
+                // Check if this FAQ is already open
+                const isOpen = answer.style.display === 'block';
+                
+                // Close all FAQs
+                faqItems.forEach(otherItem => {
+                    const otherAnswer = otherItem.querySelector('.faq-answer');
+                    const otherIcon = otherItem.querySelector('.fa-chevron-down');
+                    
+                    otherAnswer.style.display = 'none';
+                    otherIcon.classList.remove('rotate-icon');
+                    otherItem.classList.remove('active');
+                });
+                
+                // If this FAQ wasn't open, open it
+                if (!isOpen) {
+                    answer.style.display = 'block';
+                    icon.classList.add('rotate-icon');
+                    item.classList.add('active');
+                    answer.classList.add('show');
+                }
+            });
+    
+            // Add hover effect
+            item.addEventListener('mouseenter', () => {
+                if (!item.classList.contains('active')) {
+                    item.style.transform = 'translateY(-2px)';
+                }
+            });
+    
+            item.addEventListener('mouseleave', () => {
+                if (!item.classList.contains('active')) {
+                    item.style.transform = 'translateY(0)';
+                }
+            });
+    
+            // Track FAQ interactions
+            const questionElement = item.querySelector('.faq-question');
+            questionElement.addEventListener('click', () => {
+                const faqId = item.getAttribute('data-faq-id');
+                // You can add analytics tracking here if needed
+                console.log(`FAQ ${faqId} clicked`);
+            });
+        });
+    
+        qrForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            generateQRCode();
+        });
+    
+        function generateQRCode() {
+            const content = document.getElementById('content').value;
+            const size = document.getElementById('qrSize').value;
+            const errorCorrection = document.getElementById('errorCorrection').value;
+            const qrPreview = document.getElementById('qrPreview');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const normalState = document.querySelector('.normal-state');
+    
+            if (!content) return;
+    
+            // Show loading state
+            loadingSpinner.style.display = 'inline-block';
+            normalState.style.display = 'none';
+            qrPreview.innerHTML = '<div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div>';
+    
+            // Generate QR code URL
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(content)}&size=${size}&ecc=${errorCorrection}&color=${selectedColor}`;
+    
+            // Create and display QR code
+            const img = new Image();
+            img.src = qrUrl;
+            img.alt = 'QR Code';
+            img.style.width = `${size}px`; // Set the width explicitly
+            img.style.height = `${size}px`; // Set the height explicitly
+            img.onload = function() {
+                qrPreview.innerHTML = '';
+                qrPreview.appendChild(img);
+                document.getElementById('qrActions').style.display = 'block';
+                loadingSpinner.style.display = 'none';
+                normalState.style.display = 'inline';
+            };
+            img.onerror = function() {
+                qrPreview.innerHTML = '<p class="text-danger">Error generating QR code. Please try again.</p>';
+                loadingSpinner.style.display = 'none';
+                normalState.style.display = 'inline';
+            };
+        }
+    });
+    
+    function downloadQR() {
+        const qrImage = document.querySelector('#qrPreview img');
+        if (!qrImage) return;
+    
+        fetch(qrImage.src)
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'qrcode.png';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            })
+            .catch(error => {
+                console.error('Error downloading QR code:', error);
+                showNotification('Error downloading QR code. Please try again.', 'error');
+            });
+    }
+    
+    function shareQR() {
+        const qrImage = document.querySelector('#qrPreview img');
+        if (!qrImage) return;
+    
+        if (navigator.share) {
+            fetch(qrImage.src)
+                .then(response => response.blob())
+                .then(blob => {
+                    const file = new File([blob], 'qrcode.png', { type: 'image/png' });
+                    navigator.share({
+                        title: 'QR Code',
+                        text: 'Check out this QR code!',
+                        files: [file]
+                    }).catch(error => {
+                        if (error.name !== 'AbortError') {
+                            console.error('Error sharing QR code:', error);
+                            showNotification('Error sharing QR code. Please try again.', 'error');
+                        }
+                    });
+                });
+        } else {
+            // Fallback for browsers that don't support native sharing
+            const shareUrl = document.querySelector('#content').value;
+            window.open(`https://twitter.com/intent/tweet?text=Check%20out%20this%20QR%20code!&url=${encodeURIComponent(shareUrl)}`);
+        }
+    }
+    
+    function showNotification(message, type) {
+        const notification = $(`
+            <div class="notification notification-${type}">
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+                ${message}
+            </div>
+        `).appendTo('body');
+    
+        setTimeout(() => {
+            notification.fadeOut(300, function() {
+                $(this).remove();
+            });
+        }, 3000);
+    }
+
+    // Add this to your existing JavaScript
+function showLoading() {
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const normalState = document.querySelector('.normal-state');
+    
+    loadingSpinner.style.display = 'inline-block';
+    normalState.style.display = 'none';
+    
+    return {
+        hide: function() {
+            loadingSpinner.style.display = 'none';
+            normalState.style.display = 'inline';
+        }
+    };
+}
+    </script>
+{% endblock %}

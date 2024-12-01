@@ -3,12 +3,58 @@
 <head>
     {% load static %}
     <meta charset="UTF-8">
+    <meta name="title" content="Bitly - Free URL Shortener | Best Link Management Platform 2024">
+    <meta name="description" content="Transform long URLs into short links instantly. Create, track, and manage your links with our professional URL shortener. Free custom links, analytics, and QR codes.">
+    <meta name="author" content="Bitly URL Shortener">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Create custom QR codes for free with our advanced QR code generator. Generate QR codes for URLs, text, contact cards, and more. Download in high quality PNG format.">
+    <meta name="keywords" content="qr code generator, free qr code, custom qr code, url shortener, qr code maker, dynamic qr codes, qr code scanner">
+    <meta name="robots" content="index, follow">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="title" content="Bitly - Best Free URL Shortener & Link Management Platform">
     <meta name="description" content="Transform long URLs into memorable short links. Our URL shortener helps you create, track, and manage your shortened links for better online presence.">
     <meta name="keywords" content="url shortener, bitly, link shortener, short url, link management, url tracking, custom links">
     <meta name="author" content="Bitly URL Shortener">
     <meta name="robots" content="index, follow">
+    <meta name="language" content="English">
+    <meta name="author" content="Bitly">
+    <meta name="revisit-after" content="7 days">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:title" content="Free QR Code Generator - Create Custom QR Codes | Bitly">
+    <meta property="og:description" content="Create custom QR codes for free with our advanced QR code generator. Generate QR codes for URLs, text, contact cards, and more.">
+    <meta property="og:image" content="{% static 'images/og-image.jpg' %}">
+
+<meta name="revisit-after" content="7 days">
+<meta name="rating" content="General">
+<meta name="distribution" content="Global">
+<meta name="coverage" content="Worldwide">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+
+<meta property="og:site_name" content="Bitly URL Shortener">
+<meta property="og:locale" content="en_US">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://bitly.works/">
+<meta property="og:title" content="Bitly - Professional URL Shortener & Link Management Tool">
+<meta property="og:description" content="Create free custom short links, track click analytics, and manage all your links in one place. The most trusted URL shortener since 2024.">
+<meta property="og:image" content="https://bitly.works{% static 'images/og-image.jpg' %}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@BitlyShortener">
+<meta name="twitter:creator" content="@BitlyShortener">
+<meta name="twitter:title" content="Bitly - Best Free URL Shortener & Link Manager">
+<meta name="twitter:description" content="Create short links, custom URLs & QR codes. Track clicks with real-time analytics. The most trusted URL shortener for businesses and individuals.">
+<meta name="twitter:image" content="https://bitly.works{% static 'images/twitter-card.jpg' %}">
+
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+<meta http-equiv="Strict-Transport-Security" content="max-age=31536000; includeSubDomains">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: 'unsafe-inline' 'unsafe-eval'">
+
     <title>{% block title %}Bitly - URL Shortener{% endblock %}</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -36,6 +82,12 @@
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://bitly.works/">
+    <meta property="twitter:url" content="{{ request.build_absolute_uri }}">
+    <meta property="twitter:title" content="Free QR Code Generator - Create Custom QR Codes | Bitly">
+    <meta property="twitter:description" content="Create custom QR codes for free with our advanced QR code generator. Download in high quality PNG format.">
+    <meta property="twitter:image" content="{% static 'images/twitter-card.jpg' %}">
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
+
     <meta property="twitter:title" content="Bitly - Professional URL Shortener">
     <meta property="twitter:description" content="Create and manage short links with our powerful URL shortener. Track clicks, analyze data, and optimize your links.">
     <meta property="twitter:image" content="{% static 'images/bitly-twitter-card.jpg' %}">
@@ -145,16 +197,53 @@
             "@type": "WebApplication",
             "name": "Bitly URL Shortener",
             "url": "https://bitly.works",
-            "description": "Professional URL shortening service with link management and analytics",
+            "description": "Professional URL shortening service with advanced link management and analytics features",
             "applicationCategory": "URL Shortener",
+            "browserRequirements": "Requires JavaScript. Requires HTML5.",
             "operatingSystem": "All",
             "offers": {
                 "@type": "Offer",
                 "price": "0",
                 "priceCurrency": "USD"
-            }
+            },
+            "aggregateRating": {
+                "@type": "AggregateRating",
+                "ratingValue": "4.8",
+                "reviewCount": "1250"
+            },
+            "featureList": [
+                "URL Shortening",
+                "Click Analytics",
+                "Custom Short Links",
+                "QR Code Generation",
+                "Link Management",
+                "Real-time Statistics"
+            ]
         }
         </script>
+        <script type="application/ld+json">
+            {
+                "@context": "https://schema.org",
+                "@type": "WebApplication",
+                "name": "Bitly QR Code Generator",
+                "url": "{{ request.build_absolute_uri }}",
+                "description": "Free online QR code generator with advanced customization options",
+                "applicationCategory": "Utility",
+                "operatingSystem": "All",
+                "offers": {
+                    "@type": "Offer",
+                    "price": "0",
+                    "priceCurrency": "USD"
+                },
+                "featureList": [
+                    "Custom QR Codes",
+                    "Multiple QR Types",
+                    "High Resolution Downloads",
+                    "Analytics Integration",
+                    "Dynamic QR Codes"
+                ]
+            }
+            </script>
     <!-- Base JavaScript -->
     <script>
         function copyToClipboard() {

@@ -235,3 +235,37 @@ Disallow: /admin/
 Sitemap: http://{host}/sitemap.xml
 """
     return HttpResponse(content, content_type='text/plain')
+
+#def qr_generator(request):
+ #   return render(request, 'shortener/qr_generator.html')
+def qr_generator(request):
+    context = {
+        'faqs': [
+            {
+                'question': 'What is a QR Code?',
+                'answer': 'A QR Code is a two-dimensional barcode that can be quickly read by digital devices such as smartphones.'
+            },
+            {
+                'question': 'What types of QR codes can I create?',
+                'answer': 'You can create QR codes for URLs, text, contact information, phone numbers, SMS, emails, and more.'
+            },
+            {
+                'question': 'Are the QR codes free to use?',
+                'answer': 'Yes, all QR codes generated on our platform are free to use for both personal and commercial purposes.'
+            },
+            {
+                'question': 'What is the best size for a QR code?',
+                'answer': 'The recommended size depends on your use case. For print materials, we recommend at least 300x300 pixels.'
+            },
+            {
+                'question': 'Can I customize my QR code?',
+                'answer': 'Yes, you can customize the color, size, and error correction level of your QR code.'
+            },
+        ],
+        'stats': {
+            'total_generated': 1000000,
+            'total_scans': 5000000,
+            'active_users': 100000,
+        }
+    }
+    return render(request, 'shortener/qr_generator.html', context)

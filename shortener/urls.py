@@ -33,4 +33,8 @@ urlpatterns = [
      path('robots.txt',
          TemplateView.as_view(template_name="robots.txt", content_type="text/plain"),
          name='robots.txt'),
+    path('qr-generator/', views.qr_generator, name='qr_generator'),
+
+
+
 ]
