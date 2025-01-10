@@ -1,25 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>http://bitly.works/</loc>
-        <lastmod>{{ date }}</lastmod>
+        <loc>https://bitly.works/</loc>
+        <lastmod>{{date|date:"Y-m-d"}}T00:00:00+00:00</lastmod>
         <changefreq>daily</changefreq>
         <priority>1.0</priority>
     </url>
     <url>
-        <loc>http://127.0.0.1:8000/contact/</loc>
-        <lastmod>{{ date }}</lastmod>
+        <loc>https://bitly.works/contact/</loc>
+        <lastmod>{{date|date:"Y-m-d"}}T00:00:00+00:00</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>http://127.0.0.1:8000/terms/</loc>
-        <lastmod>{{ date }}</lastmod>
+        <loc>https://bitly.works/terms/</loc>
+        <lastmod>{{date|date:"Y-m-d"}}T00:00:00+00:00</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>http://127.0.0.1:8000/privacy/</loc>
-        <lastmod>{{ date }}</lastmod>
+        <loc>https://bitly.works/privacy/</loc>
+        <lastmod>{{date|date:"Y-m-d"}}T00:00:00+00:00</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://bitly.works/qr-generator/</loc>
+        <lastmod>{{date|date:"Y-m-d"}}T00:00:00+00:00</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>

@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-9a%82*#*op7et2#%zfw5659!!=sc1m3o4l+&#w$b%_kosxnh(i
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'bitly.works']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -57,8 +57,14 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'djangor.middleware.security.SecurityMiddleware',  # Add this line
+    #'django.middleware.security.URLSecurityMiddleware',
+    'shortener.middleware.SecurityMiddleware',  # Add this line first
+
+
 ]
 
+#GOOGLE_SAFE_BROWSING_KEY = 'AIzaSyCfyoyX1cmmzpNJL_m7OtQF0ra0OwvAhkQ'  # Replace with your actual API key
 ROOT_URLCONF = 'url_shortener.urls'
 
 TEMPLATES = [
@@ -73,6 +79,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'shortener.context_processors.google_analytics',
+
 
             ],
         },
@@ -151,5 +158,41 @@ EMAIL_HOST_PASSWORD = 'anmw wdqx xdye oxlh'  # Your Gmail app password
 
 # Additional settings
 ADMIN_EMAIL = 'manikant007y@gmail.com'  # Email where you want to receive contact form messages
+CONTACT_FORM_RECIPIENTS = ['manikant007y@gmail.com']
 
 
+EMAIL_TIMEOUT = 30  # Timeout in seconds
+EMAIL_SSL_CERTFILE = None
+EMAIL_SSL_KEYFILE = None
+
+EMAIL_USE_SSL = False  # Don't use both TLS and SSL
+SMTP_SSL_CIPHERS = 'TLS_AES_256_GCM_SHA384'
+from dotenv import load_dotenv
+
+load_dotenv()
+
+
+SAFE_BROWSING_API_KEY = os.getenv('SAFE_BROWSING_API_KEY')
+SAFE_BROWSING_CLIENT_ID = 'your-url-shortener'  # Identify your application
+SAFE_BROWSING_CLIENT_VERSION = '1.0'
+
+# Safe Browsing API Settings
+SAFE_BROWSING_CONFIG = {
+    'API_ENDPOINT': 'https://safebrowsing.googleapis.com/v4/threatMatches:find',
+    'THREAT_TYPES': [
+        'MALWARE',
+        'SOCIAL_ENGINEERING',
+        'UNWANTED_SOFTWARE',
+        'POTENTIALLY_HARMFUL_APPLICATION'
+    ],
+    'PLATFORM_TYPES': ['ANY_PLATFORM'],
+    'THREAT_ENTRY_TYPES': ['URL'],
+    'MAX_CACHE_TIME': 3600,  # Cache results for 1 hour
+    'REQUEST_TIMEOUT': 10,   # Timeout in seconds
+}
+
+# Rate Limiting
+SAFE_BROWSING_RATE_LIMIT = {
+    'MAX_REQUESTS_PER_DAY': 10000,  # Adjust based on your API quota
+    'MAX_REQUESTS_PER_MINUTE': 500
+}

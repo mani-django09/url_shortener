@@ -1,7 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 import random
 import string
+import requests
 from .models import URL
+from django.core.mail.backends.smtp import EmailBackend
+import tldextract
 from django.http import HttpResponse
 from .forms import URLForm
 from rest_framework import generics
@@ -19,6 +22,16 @@ from django.views.decorators.http import require_http_methods
 import logging
 from django.template.loader import render_to_string
 from django.utils.timezone import now
+import re
+from .models import URL, BlockedDomain
+from django.core.validators import URLValidator
+from django.core.exceptions import ValidationError
+import hashlib
+import json
+from django.http import JsonResponse
+from django.core.cache import cache
+from urllib.parse import urlparse
+
 
 
 logger = logging.getLogger(__name__)
@@ -77,10 +90,19 @@ def home(request):
         form = URLForm()
     
     return render(request, 'shortener/home.html', {'form': form, 'short_url': short_url, 'error_message': error_message})
+
 def redirect_url(request, short_code):
     url_instance = get_object_or_404(URL, short_code=short_code)
-    url_instance.clicks += 1
-    url_instance.save()
+    
+    # Perform security check before redirect
+    if not SecurityChecks.check_phishing_database(url_instance.original_url):
+        return render(request, 'shortener/blocked.html', {
+            'message': 'This URL has been flagged as potentially harmful'
+        })
+    
+    # Record analytics
+    record_click(request, url_instance)
+    
     return redirect(url_instance.original_url)
 
 @csrf_exempt
@@ -103,14 +125,23 @@ def l_d_view(request):
 def contact_view(request):
     if request.method == "POST":
         try:
-            # Get form data
+            email_backend = EmailBackend(
+                host=settings.EMAIL_HOST,
+                port=settings.EMAIL_PORT,
+                username=settings.EMAIL_HOST_USER,
+                password=settings.EMAIL_HOST_PASSWORD,
+                use_tls=settings.EMAIL_USE_TLS,
+                fail_silently=False,
+                timeout=30
+            )
+
             first_name = request.POST.get('firstName')
             last_name = request.POST.get('lastName')
             email = request.POST.get('email')
             subject = request.POST.get('subject')
             message = request.POST.get('message')
 
-            # Compose email message
+            # Main email
             email_subject = f'New Contact Form Submission: {subject}'
             email_message = f"""
 New Contact Form Submission
@@ -123,16 +154,17 @@ Message:
 {message}
             """
 
-            # Send email
-            send_mail(
+            # Send using EmailMessage
+            main_email = EmailMessage(
                 subject=email_subject,
-                message=email_message,
+                body=email_message,
                 from_email=settings.EMAIL_HOST_USER,
-                recipient_list=[settings.ADMIN_EMAIL],
-                fail_silently=False,
+                to=[settings.ADMIN_EMAIL],
+                connection=email_backend
             )
+            main_email.send()
 
-            # Send confirmation email to user
+            # Confirmation email
             confirmation_message = f"""
 Dear {first_name},
 
@@ -141,28 +173,28 @@ Thank you for contacting us. We have received your message and will get back to 
 Best regards,
 URL Shortener Team
             """
-            
-            send_mail(
+
+            confirmation_email = EmailMessage(
                 subject='Thank you for contacting us',
-                message=confirmation_message,
+                body=confirmation_message,
                 from_email=settings.EMAIL_HOST_USER,
-                recipient_list=[email],
-                fail_silently=False,
+                to=[email],
+                connection=email_backend
             )
+            confirmation_email.send()
 
             return JsonResponse({
                 'status': 'success',
-                'message': 'Your message has been sent successfully! We will get back to you soon.'
+                'message': 'Your message has been sent successfully!'
             })
-            
+
         except Exception as e:
             logger.error(f"Error sending email: {str(e)}")
             return JsonResponse({
                 'status': 'error',
-                'message': f'Failed to send message. Error: {str(e)}'
+                'message': f'Failed to send message. Please try again later.'
             }, status=500)
 
-    # If GET request, just render the form
     return render(request, 'includes/contact.html')
 
 @csrf_exempt  # Only for testing, remove in production
@@ -220,8 +252,10 @@ def privacy_view(request):
 
 def sitemap_view(request):
     """Generate the sitemap.xml file"""
-    date = now().strftime('%Y-%m-%d')
-    content = render_to_string('sitemap.xml', {'date': date})
+    current_date = now()
+    content = render_to_string('sitemap.xml', {
+        'date': current_date,
+    })
     return HttpResponse(content, content_type='application/xml')
 
 def robots_txt(request):
@@ -269,3 +303,133 @@ def qr_generator(request):
         }
     }
     return render(request, 'shortener/qr_generator.html', context)
+
+class SecurityChecks:
+    @staticmethod
+    def is_valid_url(url):
+        try:
+            URLValidator()(url)
+            return True
+        except ValidationError:
+            return False
+
+    @staticmethod
+    def check_phishing_database(url):
+        # Check against Google Safe Browsing API
+        api_key = settings.SAFE_BROWSING_API_KEY
+        api_url = "https://safebrowsing.googleapis.com/v4/threatMatches:find"
+        
+        payload = {
+            "client": {
+                "clientId": "your-client-id",
+                "clientVersion": "1.0.0"
+            },
+            "threatInfo": {
+                "threatTypes": ["MALWARE", "SOCIAL_ENGINEERING", "UNWANTED_SOFTWARE"],
+                "platformTypes": ["ANY_PLATFORM"],
+                "threatEntryTypes": ["URL"],
+                "threatEntries": [{"url": url}]
+            }
+        }
+        
+        headers = {"Content-Type": "application/json"}
+        response = requests.post(api_url, params={"key": api_key}, json=payload, headers=headers)
+        
+        return len(response.json().get("matches", [])) == 0
+
+    @staticmethod
+    def check_domain_reputation(domain):
+        cache_key = f'domain_reputation_{domain}'
+        reputation = cache.get(cache_key)
+        
+        if reputation is None:
+            # Check against various security services (VirusTotal, PhishTank, etc.)
+            # This is a simplified example
+            blocked = BlockedDomain.objects.filter(domain=domain).exists()
+            reputation = not blocked
+            cache.set(cache_key, reputation, 3600)  # Cache for 1 hour
+        
+        return reputation
+
+    @staticmethod
+    def detect_suspicious_patterns(url):
+        suspicious_patterns = [
+            r'bank', r'login', r'secure', r'account', r'verify', r'seb\.',
+            r'paypal', r'signin', r'security', r'password', r'update'
+        ]
+        
+        url_lower = url.lower()
+        for pattern in suspicious_patterns:
+            if re.search(pattern, url_lower):
+                return True
+        return False
+def generate_unique_code():
+    while True:
+        code = ''.join(random.choices(string.ascii_letters + string.digits, k=6))
+        if not URL.objects.filter(short_code=code).exists():
+            return code
+        
+def create_short_url(request):
+    if request.method == 'POST':
+        original_url = request.POST.get('original_url')
+        
+        if not SecurityChecks.is_valid_url(original_url):
+            return JsonResponse({'error': 'Invalid URL format'}, status=400)
+
+        try:
+            url_hash = hashlib.sha256(original_url.encode()).hexdigest()
+            existing_url = URL.objects.filter(url_hash=url_hash).first()
+            
+            if existing_url:
+                return JsonResponse({
+                    'short_url': request.build_absolute_uri(f'/s/{existing_url.short_code}')
+                })
+
+            url_instance = URL.objects.create(
+                original_url=original_url,
+                short_code=generate_unique_code(),
+                url_hash=url_hash,
+                created_by_ip=get_client_ip(request)
+            )
+            
+            return JsonResponse({
+                'short_url': request.build_absolute_uri(f'/s/{url_instance.short_code}')
+            })
+
+        except Exception as e:
+            logger.error(f"Error creating short URL: {str(e)}")
+            return JsonResponse({'error': 'Error creating shortened URL'}, status=500)
+
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
+def log_suspicious_activity(request, url):
+    from .models import SuspiciousActivity
+    SuspiciousActivity.objects.create(
+        ip_address=get_client_ip(request),
+        url_attempted=url,
+        user_agent=request.META.get('HTTP_USER_AGENT', ''),
+        request_data=json.dumps(dict(request.POST))
+    )
+
+def record_click(request, url_instance):
+    try:
+        url_instance.clicks += 1
+        url_instance.save()
+        
+        # Optional: Record more detailed analytics
+        ActivityLog.objects.create(
+            url=url_instance,
+            ip_address=get_client_ip(request),
+            user_agent=request.META.get('HTTP_USER_AGENT', ''),
+            referer=request.META.get('HTTP_REFERER', '')
+        )
+    except Exception as e:
+        logger.error(f"Error recording click: {str(e)}")

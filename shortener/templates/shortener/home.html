@@ -169,24 +169,6 @@
                 </div>
             </div>
 
-            <!-- Usage Stats -->
-            <div class="usage-stats text-center mb-5">
-                <div class="row">
-                    <div class="col-md-4">
-                        <h3 class="mb-2">1M+</h3>
-                        <p class="mb-0">Links Shortened</p>
-                    </div>
-                    <div class="col-md-4">
-                        <h3 class="mb-2">5M+</h3>
-                        <p class="mb-0">Monthly Clicks</p>
-                    </div>
-                    <div class="col-md-4">
-                        <h3 class="mb-2">100K+</h3>
-                        <p class="mb-0">Active Users</p>
-                    </div>
-                </div>
-            </div>
-
             <!-- Feature Cards -->
             <div class="row mb-5">
                 <div class="col-md-4 mb-4">
@@ -285,6 +267,7 @@
                 </div>
             </div>
 
+            
             <!-- Testimonials -->
             
 {% endblock %}
@@ -497,17 +480,6 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Add dynamic background color change on scroll
-window.addEventListener('scroll', function() {
-    const scrolled = window.scrollY;
-    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-    const scrollPercentage = (scrolled / maxScroll) * 100;
-    
-    document.querySelector('.gradient-bg').style.background = 
-        `linear-gradient(135deg, 
-            hsl(${scrollPercentage}, 70%, 90%) 0%, 
-            hsl(${scrollPercentage + 40}, 70%, 90%) 100%)`;
-});
 
 // Add intersection observer for animation on scroll
 const observerOptions = {
@@ -641,6 +613,7 @@ document.querySelectorAll('.feature-card, .testimonial-card, .faq-item').forEach
             transform: translate(-50%, 0);
             opacity: 1;
         }
+        
     }
 
     .btn-twitter { background: #1DA1F2; color: white; }

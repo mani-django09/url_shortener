@@ -1,7 +1,6 @@
 <header class="header py-3 bg-white shadow-sm">
     <div class="container">
         <nav class="d-flex justify-content-between align-items-center">
-
             <!-- Logo -->
             <a href="/" class="text-decoration-none">
                 <div class="d-flex align-items-center">
@@ -9,9 +8,11 @@
                     <span class="ml-2 text-muted">.works</span>
                 </div>
             </a>
-            <a class="nav-link" href="{% url 'qr_generator' %}">QR Generator</a>
 
-            <!-- Navigation --
+            <!-- Desktop Menu -->
+            <div class="d-none d-md-flex align-items-center">
+                <a class="nav-link" href="{% url 'qr_generator' %}">QR Generator</a>
+            </div>
 
             <!-- Mobile Menu Button -->
             <button class="d-md-none btn btn-link p-0" type="button" onclick="toggleMobileMenu()">
@@ -20,22 +21,15 @@
         </nav>
 
         <!-- Mobile Menu -->
-        <div id="mobileMenu" class="d-none">
+        <div id="mobileMenu" class="mobile-menu">
             <div class="py-3">
-                <a href="/" class="d-block py-2 text-dark text-decoration-none">Home</a>
-                <a href="/features" class="d-block py-2 text-dark text-decoration-none">Features</a>
-                <a href="/pricing" class="d-block py-2 text-dark text-decoration-none">Pricing</a>
+                <a href="{% url 'qr_generator' %}" class="mobile-menu-item">
+                    <i class="fas fa-qrcode mr-2"></i> QR Generator
+                </a>
             </div>
         </div>
     </div>
 </header>
-
-<script>
-function toggleMobileMenu() {
-    const menu = document.getElementById('mobileMenu');
-    menu.classList.toggle('d-none');
-}
-</script>
 
 <style>
 .header {
@@ -44,4 +38,50 @@ function toggleMobileMenu() {
     z-index: 1000;
     background: white;
 }
+
+.mobile-menu {
+    display: none;
+    background: white;
+    border-top: 1px solid #eee;
+    margin-top: 1rem;
+}
+
+.mobile-menu.active {
+    display: block;
+}
+
+.mobile-menu-item {
+    display: block;
+    padding: 0.75rem 1rem;
+    color: #333;
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
+.mobile-menu-item:hover {
+    background-color: #f8f9fa;
+    text-decoration: none;
+    color: var(--primary-color);
+}
 </style>
+
+<script>
+function toggleMobileMenu() {
+    const menu = document.getElementById('mobileMenu');
+    menu.classList.toggle('active');
+    
+    const menuButton = document.querySelector('.fa-bars');
+    menuButton.classList.toggle('fa-bars');
+    menuButton.classList.toggle('fa-times');
+}
+
+// Close mobile menu when clicking outside
+document.addEventListener('click', function(event) {
+    const menu = document.getElementById('mobileMenu');
+    const menuButton = document.querySelector('.btn-link');
+    
+    if (!menu.contains(event.target) && !menuButton.contains(event.target) && menu.classList.contains('active')) {
+        toggleMobileMenu();
+    }
+});
+</script>
