@@ -64,7 +64,7 @@ class URLCreateAPIView(generics.CreateAPIView):
             url_instance = serializer.save()
             url_instance.short_code = self.generate_short_code()  # Generate the short code
             url_instance.save()
-            short_url = request.build_absolute_uri(f"/short/{url_instance.short_code}/")  # Correct short URL construction
+            short_url = request.build_absolute_uri(f"/{url_instance.short_code}")  # Correct short URL construction
             return Response({'short_url': short_url}, status=status.HTTP_201_CREATED)  # Return short URL
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -83,7 +83,7 @@ def home(request):
         form = URLForm(request.POST)
         if form.is_valid():
             url_instance = form.save()
-            short_url = request.build_absolute_uri(f"/short/{url_instance.short_code}/")
+            short_url = request.build_absolute_uri(f"/{url_instance.short_code}/")
         else:
             error_message = "Error creating short URL. Please check the URL format and try again."
     else:
