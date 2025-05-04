@@ -33,3 +33,18 @@ class SecurityMiddleware:
                     return HttpResponseForbidden('URL blocked for security reasons')
         
         return self.get_response(request)
+    from django.utils.cache import patch_response_headers
+
+class CacheControlMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.get_response(request)
+        
+        # Cache static files for 30 days
+        if request.path.startswith('/static/'):
+            patch_response_headers(response, cache_timeout=2592000)  # 30 days
+            response['Cache-Control'] = 'public, max-age=2592000'
+        
+        return response

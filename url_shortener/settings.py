@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-9a%82*#*op7et2#%zfw5659!!=sc1m3o4l+&#w$b%_kosxnh(i
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 
 # Application definition
@@ -57,12 +57,27 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # 'djangor.middleware.security.SecurityMiddleware',  # Add this line
-    #'django.middleware.security.URLSecurityMiddleware',
-    'shortener.middleware.SecurityMiddleware',  # Add this line first
-
-
+    'shortener.middleware.SecurityMiddleware',  
+    'django.middleware.gzip.GZipMiddleware',
+    'shortener.middleware.CacheControlMiddleware'
 ]
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    }
+}
+
+# Static files compression and caching
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
+
+# Session settings optimization
+SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
+
+
+
+
 
 #GOOGLE_SAFE_BROWSING_KEY = 'AIzaSyCfyoyX1cmmzpNJL_m7OtQF0ra0OwvAhkQ'  # Replace with your actual API key
 ROOT_URLCONF = 'url_shortener.urls'
@@ -71,7 +86,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [os.path.join(BASE_DIR,"templates")],
-        'APP_DIRS': True,
+        'APP_DIRS': False,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -79,8 +94,14 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'shortener.context_processors.google_analytics',
+                'shortener.context_processors.meta_tags',  
 
-
+            ],
+            'loaders': [
+                ('django.template.loaders.cached.Loader', [
+                    'django.template.loaders.filesystem.Loader',
+                    'django.template.loaders.app_directories.Loader',
+                ]),
             ],
         },
     },
@@ -123,6 +144,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
+USE_TZ = True
 
 TIME_ZONE = 'UTC'
 

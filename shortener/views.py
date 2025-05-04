@@ -31,6 +31,15 @@ import json
 from django.http import JsonResponse
 from django.core.cache import cache
 from urllib.parse import urlparse
+from django.shortcuts import render, get_object_or_404
+from datetime import timedelta
+from user_agents import parse
+import geoip2.database
+from django.db.models import Count
+from django.utils import timezone
+from django.views.decorators.cache import cache_page
+from .models import Link
+from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
 
 
 
@@ -64,7 +73,7 @@ class URLCreateAPIView(generics.CreateAPIView):
             url_instance = serializer.save()
             url_instance.short_code = self.generate_short_code()  # Generate the short code
             url_instance.save()
-            short_url = request.build_absolute_uri(f"/{url_instance.short_code}")  # Correct short URL construction
+            short_url = request.build_absolute_uri(f"/{url_instance.short_code}/")
             return Response({'short_url': short_url}, status=status.HTTP_201_CREATED)  # Return short URL
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -75,7 +84,8 @@ class URLRetrieveAPIView(generics.RetrieveAPIView):
     def get(self, request, short_code, *args, **kwargs):
         url_instance = get_object_or_404(URL, short_code=short_code)
         return redirect(url_instance.original_url)  # Redirect to the original URL
-
+@cache_page(60 * 15)
+@ensure_csrf_cookie
 def home(request):
     short_url = None
     error_message = None
@@ -92,6 +102,9 @@ def home(request):
     return render(request, 'shortener/home.html', {'form': form, 'short_url': short_url, 'error_message': error_message})
 
 def redirect_url(request, short_code):
+    """
+    Updated redirect view that creates detailed click events
+    """
     url_instance = get_object_or_404(URL, short_code=short_code)
     
     # Perform security check before redirect
@@ -100,21 +113,80 @@ def redirect_url(request, short_code):
             'message': 'This URL has been flagged as potentially harmful'
         })
     
-    # Record analytics
-    record_click(request, url_instance)
+    # Record basic click counter
+    url_instance.clicks += 1
+    url_instance.save()
+    
+    # Get client information
+    ip_address = get_client_ip(request)
+    user_agent = request.META.get('HTTP_USER_AGENT', '')
+    referrer = request.META.get('HTTP_REFERER', '')
+    
+    # Record detailed click event
+    try:
+        # Try to use ClickEvent model first (will work if model exists)
+        from .models import ClickEvent
+        
+        ClickEvent.objects.create(
+            url=url_instance,
+            ip_address=ip_address,
+            user_agent=user_agent,
+            referrer=referrer
+        )
+    except (ImportError, RuntimeError):
+        # Fall back to ActivityLog if ClickEvent isn't available
+        try:
+            ActivityLog.objects.create(
+                original_url=url_instance.original_url,
+                short_url=request.build_absolute_uri(),
+                short_code=short_code,
+                ip_address=ip_address,
+                user_agent=user_agent,
+                referer=referrer
+            )
+        except Exception as e:
+            logger.error(f"Error recording click details: {str(e)}")
     
     return redirect(url_instance.original_url)
 
-@csrf_exempt
-
+csrf_protect  
 def shorten_url(request):
+    """
+    View function to create shortened URLs
+    """
     if request.method == 'POST':
         original_url = request.POST.get('original_url')
-        # Logic to create a shortened URL...
-        short_url = 'your_short_url_here'  # Example shortened URL
-        return JsonResponse({'short_url': short_url})
-    return JsonResponse({'error': 'Invalid request'}, status=400)
+        
+        if not SecurityChecks.is_valid_url(original_url):
+            return JsonResponse({'error': 'Invalid URL format'}, status=400)
 
+        try:
+            url_hash = hashlib.sha256(original_url.encode()).hexdigest()
+            existing_url = URL.objects.filter(url_hash=url_hash).first()
+            
+            if existing_url:
+                # Build URL and force HTTPS
+                url = request.build_absolute_uri(f'/{existing_url.short_code}')
+                url = url.replace("http://", "https://")
+                return JsonResponse({'short_url': url})
+
+            url_instance = URL.objects.create(
+                original_url=original_url,
+                short_code=generate_unique_code(),
+                url_hash=url_hash,
+                created_by_ip=get_client_ip(request)
+            )
+            
+            # Build URL and force HTTPS
+            url = request.build_absolute_uri(f'/{url_instance.short_code}')
+            url = url.replace("http://", "https://")
+            return JsonResponse({'short_url': url})
+
+        except Exception as e:
+            logger.error(f"Error creating short URL: {str(e)}")
+            return JsonResponse({'error': 'Error creating shortened URL'}, status=500)
+
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
 
 
 def l_d_view(request):
@@ -307,11 +379,50 @@ def qr_generator(request):
 class SecurityChecks:
     @staticmethod
     def is_valid_url(url):
+        """
+        Enhanced URL validation that ensures the URL has a proper scheme
+        and meets basic format requirements
+        """
+        # Make sure URL starts with http:// or https://
+        if not url.startswith(('http://', 'https://')):
+            url = 'https://' + url
+        
+        # Remove any surrounding whitespace
+        url = url.strip()
+        
+        # Basic pattern check before sending to validator
+        url_pattern = re.compile(
+            r'^(https?:\/\/)?' +  # scheme
+            r'((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|' +  # domain name
+            r'((\d{1,3}\.){3}\d{1,3}))' +  # OR ip (v4) address
+            r'(\:\d+)?(\/[-a-z\d%_.~+]*)*' +  # port and path
+            r'(\?[;&a-z\d%_.~+=-]*)?' +  # query string
+            r'(\#[-a-z\d_]*)?$',  # fragment locator
+            re.IGNORECASE
+        )
+        
+        if not url_pattern.match(url):
+            return False
+            
         try:
             URLValidator()(url)
-            return True
+            return True, url  # Return both the validation result and the possibly modified URL
         except ValidationError:
-            return False
+            return False, url
+
+def clean_and_validate_url(url):
+    """
+    Helper function to clean and validate a URL
+    """
+    # Trim whitespace
+    url = url.strip() if url else ""
+    
+    # Add scheme if missing
+    if url and not url.startswith(('http://', 'https://')):
+        url = 'https://' + url
+    
+    is_valid, url = SecurityChecks.is_valid_url(url)
+    return is_valid, url
 
     @staticmethod
     def check_phishing_database(url):
@@ -369,6 +480,9 @@ def generate_unique_code():
         if not URL.objects.filter(short_code=code).exists():
             return code
         
+@csrf_exempt
+
+@csrf_exempt
 def create_short_url(request):
     if request.method == 'POST':
         original_url = request.POST.get('original_url')
@@ -381,9 +495,10 @@ def create_short_url(request):
             existing_url = URL.objects.filter(url_hash=url_hash).first()
             
             if existing_url:
-                return JsonResponse({
-                    'short_url': request.build_absolute_uri(f'/s/{existing_url.short_code}')
-                })
+                # Build URL and force HTTPS
+                url = request.build_absolute_uri(f'/{existing_url.short_code}')
+                url = url.replace("http://", "https://")
+                return JsonResponse({'short_url': url})
 
             url_instance = URL.objects.create(
                 original_url=original_url,
@@ -392,9 +507,10 @@ def create_short_url(request):
                 created_by_ip=get_client_ip(request)
             )
             
-            return JsonResponse({
-                'short_url': request.build_absolute_uri(f'/s/{url_instance.short_code}')
-            })
+            # Build URL and force HTTPS
+            url = request.build_absolute_uri(f'/{url_instance.short_code}')
+            url = url.replace("http://", "https://")
+            return JsonResponse({'short_url': url})
 
         except Exception as e:
             logger.error(f"Error creating short URL: {str(e)}")
@@ -403,6 +519,9 @@ def create_short_url(request):
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
 def get_client_ip(request):
+    """
+    Get the client's IP address from request headers
+    """
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
     if x_forwarded_for:
         ip = x_forwarded_for.split(',')[0]
@@ -433,3 +552,31 @@ def record_click(request, url_instance):
         )
     except Exception as e:
         logger.error(f"Error recording click: {str(e)}")
+
+
+def redirect_view(request, short_code):
+    """View for redirecting short URLs"""
+    try:
+        url_obj = ShortenedURL.objects.get(short_code=short_code)
+        
+        # Set meta tags for the current page
+        request.current_meta = {
+            'title': f'{short_code} - Bitly URL Redirect',
+            'description': f'This shortened URL redirects to a destination selected by the creator. Created with Bitly URL Shortener.',
+            'keywords': 'shortened url, redirect, bitly, short link',
+            'og_title': f'Shortened URL: {short_code}',
+            'og_description': 'Click to visit the destination of this shortened URL.',
+            'twitter_title': f'Shortened URL: {short_code}',
+            'twitter_description': 'Click to visit the destination of this shortened URL.',
+            'canonical': request.build_absolute_uri(),
+        }
+        
+        # Update click count and redirect
+        url_obj.clicks += 1
+        url_obj.save()
+        
+        return redirect(url_obj.original_url)
+    except ShortenedURL.DoesNotExist:
+        # Handle not found
+        return render(request, 'shortener/not_found.html', status=404)
+    
