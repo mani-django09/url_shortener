@@ -103,52 +103,42 @@ def home(request):
 
 def redirect_url(request, short_code):
     """
-    Updated redirect view that creates detailed click events
+    View for redirecting short URLs
     """
-    url_instance = get_object_or_404(URL, short_code=short_code)
+    logger.info(f"Processing redirect for short code: {short_code}")
     
-    # Perform security check before redirect
-    if not SecurityChecks.check_phishing_database(url_instance.original_url):
-        return render(request, 'shortener/blocked.html', {
-            'message': 'This URL has been flagged as potentially harmful'
-        })
-    
-    # Record basic click counter
-    url_instance.clicks += 1
-    url_instance.save()
-    
-    # Get client information
-    ip_address = get_client_ip(request)
-    user_agent = request.META.get('HTTP_USER_AGENT', '')
-    referrer = request.META.get('HTTP_REFERER', '')
-    
-    # Record detailed click event
     try:
-        # Try to use ClickEvent model first (will work if model exists)
-        from .models import ClickEvent
+        # Use get() with iexact to make it case-insensitive
+        url_instance = URL.objects.get(short_code__iexact=short_code)
         
-        ClickEvent.objects.create(
-            url=url_instance,
-            ip_address=ip_address,
-            user_agent=user_agent,
-            referrer=referrer
-        )
-    except (ImportError, RuntimeError):
-        # Fall back to ActivityLog if ClickEvent isn't available
+        # Update click count
+        url_instance.clicks += 1
+        url_instance.save()
+        
+        # Record analytics if available
         try:
             ActivityLog.objects.create(
                 original_url=url_instance.original_url,
                 short_url=request.build_absolute_uri(),
                 short_code=short_code,
-                ip_address=ip_address,
-                user_agent=user_agent,
-                referer=referrer
+                ip_address=get_client_ip(request),
+                user_agent=request.META.get('HTTP_USER_AGENT', ''),
+                referer=request.META.get('HTTP_REFERER', '')
             )
         except Exception as e:
-            logger.error(f"Error recording click details: {str(e)}")
+            logger.error(f"Error recording analytics: {str(e)}")
+        
+        # Redirect to the original URL
+        return redirect(url_instance.original_url)
+        
+    except URL.DoesNotExist:
+        logger.error(f"Short code not found: {short_code}")
+        # Create a basic error response
+        return HttpResponse(f"The shortened URL '{short_code}' was not found.", status=404)
+    except Exception as e:
+        logger.error(f"Error in redirect_url: {str(e)}")
+        return HttpResponse("An error occurred. Please try again later.", status=500)
     
-    return redirect(url_instance.original_url)
-
 csrf_protect  
 def shorten_url(request):
     """View function to create shortened URLs"""

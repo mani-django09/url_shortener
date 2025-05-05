@@ -43,4 +43,6 @@ urlpatterns = [
     
     # Put the catchall pattern LAST - Important!
     path('<str:short_code>/', views.redirect_url, name='redirect-url'),
+    path('<str:short_code>', views.redirect_url, name='redirect-url-no-slash'),
+
 ]
