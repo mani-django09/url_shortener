@@ -151,25 +151,30 @@ def redirect_url(request, short_code):
 
 csrf_protect  
 def shorten_url(request):
-    """
-    View function to create shortened URLs
-    """
+    """View function to create shortened URLs"""
     if request.method == 'POST':
         original_url = request.POST.get('original_url')
         
-        if not SecurityChecks.is_valid_url(original_url):
-            return JsonResponse({'error': 'Invalid URL format'}, status=400)
-
+        # Basic URL validation
+        if not original_url:
+            return JsonResponse({'error': 'URL is required'}, status=400)
+        
+        # Add http:// if missing
+        if not original_url.startswith(('http://', 'https://')):
+            original_url = 'https://' + original_url
+        
         try:
+            # Check if URL already exists in database
             url_hash = hashlib.sha256(original_url.encode()).hexdigest()
             existing_url = URL.objects.filter(url_hash=url_hash).first()
             
             if existing_url:
-                # Build URL and force HTTPS
+                # Return existing short URL
                 url = request.build_absolute_uri(f'/{existing_url.short_code}')
                 url = url.replace("http://", "https://")
                 return JsonResponse({'short_url': url})
 
+            # Create new shortened URL
             url_instance = URL.objects.create(
                 original_url=original_url,
                 short_code=generate_unique_code(),
@@ -177,7 +182,7 @@ def shorten_url(request):
                 created_by_ip=get_client_ip(request)
             )
             
-            # Build URL and force HTTPS
+            # Build and return short URL
             url = request.build_absolute_uri(f'/{url_instance.short_code}')
             url = url.replace("http://", "https://")
             return JsonResponse({'short_url': url})

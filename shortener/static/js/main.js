@@ -16,60 +16,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize smooth scrolling
     initSmoothScroll();
+    
+    // Lazy load images
+    lazyLoadImages();
 });
-
-/**
- * Initialize the FAQ accordion functionality
- */
-function initFAQ() {
-    // Dynamically populate FAQs if needed
-    const faqContainer = document.getElementById('faqAccordion');
-    if (faqContainer && window.faqs) {
-        const faqHtml = window.faqs.map((faq, index) => `
-            <div class="faq-item" onclick="toggleFaq(${index})">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h6 class="mb-0 font-weight-bold">${faq.question}</h6>
-                    <i class="fas fa-chevron-down" id="faqIcon${index}"></i>
-                </div>
-                <div class="faq-answer" id="faqAnswer${index}">
-                    <p class="mb-0 text-muted">${faq.answer}</p>
-                </div>
-            </div>
-        `).join('');
-        
-        faqContainer.innerHTML = faqHtml;
-    }
-}
-
-/**
- * Toggle FAQ answer visibility
- * @param {number} index - The index of the FAQ to toggle
- */
-function toggleFaq(index) {
-    const answer = document.getElementById(`faqAnswer${index}`);
-    const icon = document.getElementById(`faqIcon${index}`);
-    
-    // Close other FAQs
-    document.querySelectorAll('.faq-answer').forEach(item => {
-        if (item.id !== `faqAnswer${index}` && item.style.display === 'block') {
-            item.style.display = 'none';
-            const faqIndex = item.id.replace('faqAnswer', '');
-            document.getElementById(`faqIcon${faqIndex}`).classList.remove('fa-chevron-up');
-            document.getElementById(`faqIcon${faqIndex}`).classList.add('fa-chevron-down');
-        }
-    });
-    
-    // Toggle current FAQ
-    if (answer.style.display === 'block') {
-        answer.style.display = 'none';
-        icon.classList.remove('fa-chevron-up');
-        icon.classList.add('fa-chevron-down');
-    } else {
-        answer.style.display = 'block';
-        icon.classList.remove('fa-chevron-down');
-        icon.classList.add('fa-chevron-up');
-    }
-}
 
 /**
  * Initialize the URL shortening form
@@ -96,12 +46,17 @@ function initShortenForm() {
         // Get form data
         const formData = new FormData(form);
         
-        // Send AJAX request
-        fetch('/shorten-url/', {
+        // Get CSRF token
+        const csrfTokenElement = document.querySelector('[name=csrfmiddlewaretoken]');
+        const csrfToken = csrfTokenElement ? csrfTokenElement.value : '';
+        
+        // Send AJAX request to the correct endpoint
+        fetch('/shorten_url/', {
             method: 'POST',
             body: formData,
             headers: {
-                'X-Requested-With': 'XMLHttpRequest'
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': csrfToken
             }
         })
         .then(response => {
@@ -116,6 +71,12 @@ function initShortenForm() {
             if (normalState) normalState.style.display = 'inline-block';
             if (loading) loading.style.display = 'none';
             
+            // Clear input field
+            const inputField = form.querySelector('input[name="original_url"]');
+            if (inputField) {
+                inputField.value = '';
+            }
+            
             // Update UI with shortened URL
             const shortUrlElement = document.getElementById('shortUrl');
             if (shortUrlElement) {
@@ -127,6 +88,14 @@ function initShortenForm() {
             const resultContainer = document.getElementById('result');
             if (resultContainer) {
                 resultContainer.style.display = 'block';
+            }
+            
+            // Track event in Google Analytics
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'shorten_url', {
+                    'event_category': 'URL',
+                    'event_label': 'URL Shortened'
+                });
             }
             
             // Show success notification
@@ -173,6 +142,14 @@ function copyToClipboard() {
                 }, 2000);
             }
         }
+        
+        // Track copy event in Google Analytics
+        if (typeof gtag !== 'undefined') {
+            gtag('event', 'copy_url', {
+                'event_category': 'Engagement',
+                'event_label': 'URL Copied'
+            });
+        }
     }).catch(() => {
         showNotification('Failed to copy link. Please try again.', 'error');
     });
@@ -182,16 +159,33 @@ function copyToClipboard() {
  * Share shortened link
  */
 function shareLink() {
-    const shortUrl = document.getElementById('shortUrl').textContent;
+    const shortUrlElement = document.getElementById('shortUrl');
+    if (!shortUrlElement) return;
+    
+    const shortUrl = shortUrlElement.textContent || shortUrlElement.innerText;
+    if (!shortUrl) {
+        showNotification('No URL to share', 'error');
+        return;
+    }
+    
     const shareData = {
-        title: 'Check out this link!',
+        title: 'Check out this shortened URL!',
         text: 'I shortened this URL using Bitly URL shortener!',
         url: shortUrl
     };
 
     if (navigator.share) {
         navigator.share(shareData)
-            .then(() => showNotification('Thanks for sharing!', 'success'))
+            .then(() => {
+                showNotification('Thanks for sharing!', 'success');
+                // Track share event in Google Analytics
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'share_url', {
+                        'event_category': 'Engagement',
+                        'event_label': 'URL Shared'
+                    });
+                }
+            })
             .catch((error) => {
                 if (error.name !== 'AbortError') {
                     showNotification('Error sharing link', 'error');
@@ -202,16 +196,16 @@ function shareLink() {
         const socialShare = document.createElement('div');
         socialShare.className = 'social-share-popup';
         socialShare.innerHTML = `
-            <a href="https://twitter.com/intent/tweet?url=${encodeURIComponent(shortUrl)}" target="_blank" class="btn btn-sm" style="background-color: #1DA1F2; color: white;">
+            <a href="https://twitter.com/intent/tweet?url=${encodeURIComponent(shortUrl)}" target="_blank" class="btn btn-sm" style="background-color: #1DA1F2; color: white;" onclick="trackSocialShare('Twitter')">
                 <i class="fab fa-twitter"></i> Twitter
             </a>
-            <a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shortUrl)}" target="_blank" class="btn btn-sm" style="background-color: #4267B2; color: white;">
+            <a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shortUrl)}" target="_blank" class="btn btn-sm" style="background-color: #4267B2; color: white;" onclick="trackSocialShare('Facebook')">
                 <i class="fab fa-facebook"></i> Facebook
             </a>
-            <a href="https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(shortUrl)}" target="_blank" class="btn btn-sm" style="background-color: #0077B5; color: white;">
+            <a href="https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(shortUrl)}" target="_blank" class="btn btn-sm" style="background-color: #0077B5; color: white;" onclick="trackSocialShare('LinkedIn')">
                 <i class="fab fa-linkedin"></i> LinkedIn
             </a>
-            <a href="mailto:?body=${encodeURIComponent(shortUrl)}" class="btn btn-sm" style="background-color: #EA4335; color: white;">
+            <a href="mailto:?body=${encodeURIComponent(shortUrl)}" class="btn btn-sm" style="background-color: #EA4335; color: white;" onclick="trackSocialShare('Email')">
                 <i class="fas fa-envelope"></i> Email
             </a>
             <button onclick="this.parentNode.remove()" class="btn btn-sm btn-light">
@@ -220,12 +214,31 @@ function shareLink() {
         `;
         document.body.appendChild(socialShare);
         
+        // Position the popup
+        const rect = shortUrlElement.getBoundingClientRect();
+        socialShare.style.position = 'fixed';
+        socialShare.style.top = rect.bottom + window.scrollY + 10 + 'px';
+        socialShare.style.left = rect.left + window.scrollX + 'px';
+        socialShare.style.zIndex = '1000';
+        
         // Auto-remove after 10 seconds
         setTimeout(() => {
             if (document.body.contains(socialShare)) {
                 document.body.removeChild(socialShare);
             }
         }, 10000);
+    }
+}
+
+/**
+ * Track social share events
+ */
+function trackSocialShare(platform) {
+    if (typeof gtag !== 'undefined') {
+        gtag('event', 'social_share', {
+            'event_category': 'Engagement',
+            'event_label': platform
+        });
     }
 }
 
@@ -246,6 +259,7 @@ function resetForm() {
     const shortUrlElement = document.getElementById('shortUrl');
     if (shortUrlElement) {
         shortUrlElement.textContent = '';
+        shortUrlElement.setAttribute('href', '');
     }
 }
 
@@ -283,6 +297,60 @@ function showNotification(message, type) {
 }
 
 /**
+ * Initialize the FAQ accordion functionality
+ */
+function initFAQ() {
+    // Auto-open first FAQ
+    setTimeout(() => {
+        toggleFaq(0);
+    }, 1000);
+}
+
+/**
+ * Toggle FAQ answer visibility
+ * @param {number} index - The index of the FAQ to toggle
+ */
+function toggleFaq(index) {
+    const answer = document.getElementById(`faqAnswer${index}`);
+    const icon = document.getElementById(`faqIcon${index}`);
+    
+    if (!answer || !icon) return;
+    
+    // Close other FAQs
+    document.querySelectorAll('.faq-answer').forEach(item => {
+        if (item.id !== `faqAnswer${index}` && item.style.display === 'block') {
+            item.style.display = 'none';
+            const faqIndex = item.id.replace('faqAnswer', '');
+            const otherIcon = document.getElementById(`faqIcon${faqIndex}`);
+            if (otherIcon) {
+                otherIcon.classList.remove('fa-chevron-up');
+                otherIcon.classList.add('fa-chevron-down');
+            }
+        }
+    });
+    
+    // Toggle current FAQ
+    if (answer.style.display === 'block') {
+        answer.style.display = 'none';
+        icon.classList.remove('fa-chevron-up');
+        icon.classList.add('fa-chevron-down');
+    } else {
+        answer.style.display = 'block';
+        icon.classList.remove('fa-chevron-down');
+        icon.classList.add('fa-chevron-up');
+        
+        // Track FAQ engagement
+        if (typeof gtag !== 'undefined') {
+            const faqQuestion = document.querySelector(`#faqIcon${index}`).closest('.faq-question').querySelector('h6').textContent;
+            gtag('event', 'faq_click', {
+                'event_category': 'Engagement',
+                'event_label': faqQuestion
+            });
+        }
+    }
+}
+
+/**
  * Initialize scroll animations
  */
 function initScrollAnimations() {
@@ -303,12 +371,12 @@ function initScrollAnimations() {
         }, observerOptions);
 
         // Observe elements for animation
-        document.querySelectorAll('.feature-card, .testimonial-card, .faq-item, .stats-card').forEach(item => {
+        document.querySelectorAll('.feature-card, .testimonial-card, .faq-item, .stats-card, .seo-facts, .seo-enhanced-hero-content').forEach(item => {
             observer.observe(item);
         });
     } else {
         // Fallback for browsers that don't support IntersectionObserver
-        document.querySelectorAll('.feature-card, .testimonial-card, .faq-item, .stats-card').forEach(item => {
+        document.querySelectorAll('.feature-card, .testimonial-card, .faq-item, .stats-card, .seo-facts, .seo-enhanced-hero-content').forEach(item => {
             item.classList.add('animate-in');
         });
     }
@@ -342,13 +410,35 @@ function lazyLoadImages() {
     if ('loading' in HTMLImageElement.prototype) {
         // Browser supports native lazy loading
         document.querySelectorAll('img').forEach(img => {
-            img.setAttribute('loading', 'lazy');
+            if (!img.hasAttribute('loading')) {
+                img.setAttribute('loading', 'lazy');
+            }
         });
     } else {
         // Fallback for browsers that don't support native lazy loading
-        // You could use a library like lozad.js here
+        const lazyImages = document.querySelectorAll('img:not([loading])');
+        
+        if ('IntersectionObserver' in window) {
+            const imageObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        if (img.dataset.src) {
+                            img.src = img.dataset.src;
+                            delete img.dataset.src;
+                        }
+                        imageObserver.unobserve(img);
+                    }
+                });
+            });
+            
+            lazyImages.forEach(img => {
+                if (img.src) {
+                    img.dataset.src = img.src;
+                    img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"%3E%3C/svg%3E';
+                    imageObserver.observe(img);
+                }
+            });
+        }
     }
 }
-
-// Call lazy loading when DOM is loaded
-document.addEventListener('DOMContentLoaded', lazyLoadImages);
