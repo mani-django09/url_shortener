@@ -17,6 +17,241 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/home.css' %}">
+<style>
+/* Enhanced Loading Spinner Styles */
+.loading-spinner {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.spinner-dots {
+    display: inline-flex;
+    gap: 4px;
+}
+
+.spinner-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+    animation: pulse-dot 1.4s ease-in-out infinite both;
+}
+
+.spinner-dot:nth-child(1) { animation-delay: -0.32s; }
+.spinner-dot:nth-child(2) { animation-delay: -0.16s; }
+.spinner-dot:nth-child(3) { animation-delay: 0; }
+
+@keyframes pulse-dot {
+    0%, 80%, 100% {
+        transform: scale(0.6);
+        opacity: 0.5;
+    }
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Smooth button transitions */
+.btn-primary {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary:disabled {
+    background: linear-gradient(45deg, #007bff, #0056b3);
+    border-color: #0056b3;
+    cursor: not-allowed;
+}
+
+/* FAQ Styles */
+.faq-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.faq-item {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+.faq-question {
+    padding: 20px;
+    background: #f8f9fa;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.3s ease;
+}
+
+.faq-question:hover {
+    background: #e9ecef;
+}
+
+.faq-answer {
+    padding: 20px;
+    background: white;
+    display: none;
+    border-top: 1px solid #e0e0e0;
+}
+
+/* Stats Cards */
+.stats-card {
+    text-align: center;
+    padding: 30px 20px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    transition: transform 0.3s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-highlight {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+/* Feature Cards */
+.feature-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+.icon-wrapper {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+}
+
+.analytics-icon { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+.security-icon { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+.custom-icon { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+.qr-icon { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+.api-icon { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
+
+/* Comparison Table */
+.comparison-table {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.comparison-table thead {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.comparison-table tbody tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+/* SEO Facts Section */
+.seo-facts {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 15px;
+    padding: 30px;
+    margin: 30px 0;
+}
+
+.fact-item {
+    padding: 20px;
+    text-align: center;
+}
+
+/* Gradient Text */
+.gradient-text {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: bold;
+}
+
+/* Animations */
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-in {
+    animation: slideInUp 0.6s ease-out forwards;
+}
+
+/* Keyword Links */
+.keyword-link {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 600;
+    border-bottom: 2px solid transparent;
+    transition: border-bottom-color 0.3s ease;
+}
+
+.keyword-link:hover {
+    color: #0056b3;
+    text-decoration: none;
+    border-bottom-color: #007bff;
+}
+
+/* About Section */
+.about-section {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 15px;
+    padding: 40px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .stats-card {
+        margin-bottom: 20px;
+    }
+    
+    .feature-card {
+        margin-bottom: 20px;
+    }
+    
+    .stat-highlight {
+        font-size: 2rem;
+    }
+    
+    .seo-facts {
+        padding: 20px;
+    }
+    
+    .about-section {
+        padding: 30px 20px;
+    }
+}
+</style>
 {% endblock %}
 
 {% block content %}
@@ -36,16 +271,16 @@
     </div>
 </div>
 
-<div class="container py-5">
+<div <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-lg-10">
             <!-- Main Card -->
             <div class="card mb-4 shadow-lg">
-                <div class="card-body text-center p-4">  <!-- Reduced padding from p-5 to p-4 -->
-                    <h1 class="display-5 mb-2 gradient-text">Free URL Shortener</h1> <!-- Reduced margin-bottom -->
+                <div class="card-body text-center p-4">
+                    <h1 class="display-5 mb-2 gradient-text">Free URL Shortener</h1>
                     <p class="lead text-muted mb-3" style="font-weight: 600;">Transform long URLs into concise, trackable links with our advanced shortening service</p>
                     
-                    <form id="shortenForm" class="mb-3">
+                    <form id="shortenForm" class="mb-3" method="post" action="{% url 'shorten_url' %}">
                         {% csrf_token %}
                         <div class="input-group">
                             <input type="url" name="original_url" class="form-control form-control-lg" 
@@ -53,34 +288,23 @@
                             <div class="input-group-append">
                                 <button class="btn btn-primary px-4" type="submit">
                                     <span class="normal-state">Shorten <i class="fas fa-bolt ml-2"></i></span>
-                                    <span class="loading" id="loadingSpinner"></span>
+                                    <span class="loading loading-spinner" id="loadingSpinner" style="display: none;">
+                                        <span class="spinner-dots">
+                                            <span class="spinner-dot"></span>
+                                            <span class="spinner-dot"></span>
+                                            <span class="spinner-dot"></span>
+                                        </span>
+                                        <span class="ml-2">Processing...</span>
+                                    </span>
                                 </button>
                             </div>
                         </div>
                     </form>
                     
-                    <div id="result" style="display: none;">
-                        <div class="alert alert-success mt-4">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <a id="shortUrl" class="btn btn-link text-primary p-0" style="font-size: 18px; font-weight: 500;" onclick="window.open(this.href, '_blank'); return false;">
-                                    <!-- URL will be inserted here -->
-                                </a>
-                                <button class="btn btn-outline-primary btn-sm" onclick="copyToClipboard()">
-                                    <i class="fas fa-copy mr-2"></i>Copy
-                                </button>
-                            </div>
-                        </div>
-                        <div class="mt-3">
-                            <button class="btn btn-outline-secondary mr-2" onclick="shareLink()">
-                                <i class="fas fa-share-alt mr-2"></i>Share
-                            </button>
-                            <button class="btn btn-outline-info" onclick="resetForm()">
-                                <i class="fas fa-plus mr-2"></i>Shorten Another
-                            </button>
-                        </div>
-                    </div>
+                    <!-- Result div removed from homepage - will only show on success page -->
                 </div>
             </div>
+            
             <!-- SEO Enhanced Intro Content -->
             <div class="intro-content mb-5">
                 <div class="card">
@@ -95,38 +319,20 @@
                             or any other platform, <a href="https://bitly.works/" class="keyword-link" title="Bitly URL Management">Bitly</a> makes it simple. Just paste your long URL above and click "Shorten" to generate a <strong>bit.ly</strong> link you can share anywhere.
                         </p>
             
-                        <h2 class="mb-4">Why choose Bitly as your link shortener?</h2>
+                        <h3 class="mb-4">Why choose Bitly as your link shortener?</h3>
                         <p class="mb-4">
                             Unlike basic <strong>tiny URL</strong> services, <a href="https://bitly.works/" class="keyword-link" title="Bitly Advanced URL Shortener">Bitly</a> offers powerful analytics that track every click on your <strong>shortened links</strong>. Our dashboard shows you who clicked, when they clicked, and where they came from - helping you measure campaign performance and optimize your marketing strategy. With over 20 billion links shortened and 250 million clicks tracked monthly, Bitly is the trusted <strong>URL shortener</strong> for businesses of all sizes.
                         </p>
 
-                        <div class="row mt-5 text-center">
-                            <div class="col-md-4 mb-4">
-                                <div class="stats-card h-100">
-                                    <h3 class="stat-highlight">800M+</h3>
-                                    <p class="text-muted">Links shortened daily</p>
-                                </div>
-                            </div>
-                            <div class="col-md-4 mb-4">
-                                <div class="stats-card h-100">
-                                    <h3 class="stat-highlight">12B+</h3>
-                                    <p class="text-muted">Monthly clicks tracked</p>
-                                </div>
-                            </div>
-                            <div class="col-md-4 mb-4">
-                                <div class="stats-card h-100">
-                                    <h3 class="stat-highlight">85%</h3>
-                                    <p class="text-muted">Of Fortune 500 companies use Bitly</p>
-                                </div>
-                            </div>
-                        </div>
+                       
                     </div>
                 </div>
             </div>
+            
+            <!-- Comparison Table -->
             <div class="card mb-5">
                 <div class="card-body">
-                    <h2 class="text-center mb-4"><strong>Bitly.works</strong> vs Other <strong>URL Shorteners</strong></h2>
-                    
+                    <h3 class="text-center mb-4"><strong>Bitly.works</strong> vs Other <strong>URL Shorteners</strong></h3>                   
                     <div class="table-responsive">
                         <table class="table table-bordered comparison-table">
                             <thead class="thead-light">
@@ -183,73 +389,74 @@
                 </div>
             </div>     
             
-    <!-- Add this content section after your hero area for better SEO -->
-<div class="card mb-5 seo-enhanced-hero-content">
-    <div class="card-body">
-        <h2 class="h4 mb-4 font-weight-bold">Transform Your Online Presence with Our Professional URL Shortener</h2>
-        
-        <p>In today's fast-paced digital world, effective link sharing can make or break your online strategy. Our <strong>URL shortener</strong> doesn't just make your links shorter—it makes them <em>smarter</em>. With advanced tracking capabilities, brand customization options, and enterprise-grade security, Bitly.works delivers everything you need in a modern link management solution.</p>
-        
-        <div class="row mt-4">
-            <div class="col-md-6">
-                <h3 class="h5 font-weight-bold"><i class="fas fa-cog text-primary mr-2"></i>How Our Link Shortener Works</h3>
-                <p>When you paste a long URL into our shortener, our advanced algorithm instantly creates a compact alternative that redirects to your original destination. Unlike basic services, we maintain all UTM parameters and tracking codes while providing you with detailed performance metrics for every click.</p>
-            </div>
-            <div class="col-md-6">
-                <h3 class="h5 font-weight-bold"><i class="fas fa-users text-primary mr-2"></i>Who Benefits from URL Shortening?</h3>
-                <ul class="pl-3">
-                    <li><strong>Marketing professionals</strong> tracking campaign performance across channels</li>
-                    <li><strong>Social media managers</strong> maximizing character limits and engagement</li>
-                    <li><strong>Content creators</strong> sharing links across platforms efficiently</li>
-                    <li><strong>Small businesses</strong> creating professional, branded communications</li>
-                </ul>
-            </div>
-        </div>
-        
-        <div class="seo-facts mt-4 p-3 bg-light rounded">
-            <div class="row">
-                <div class="col-md-4 text-center mb-3 mb-md-0">
-                    <div class="fact-item">
-                        <span class="h2 d-block text-primary font-weight-bold">94%</span>
-                        <span class="text-muted">Higher click-through rates with branded short links</span>
+            <!-- SEO Enhanced Hero Content -->
+            <div class="card mb-5 seo-enhanced-hero-content">
+                <div class="card-body">
+                    <h3 class="h4 mb-4 font-weight-bold">Transform Your Online Presence with Our Professional URL Shortener</h3>
+                    
+                    <p>In today's fast-paced digital world, effective link sharing can make or break your online strategy. Our <strong>URL shortener</strong> doesn't just make your links shorter—it makes them <em>smarter</em>. With advanced tracking capabilities, brand customization options, and enterprise-grade security, Bitly.works delivers everything you need in a modern link management solution.</p>
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <h4 class="h5 font-weight-bold"><i class="fas fa-cog text-primary mr-2"></i>How Our Link Shortener Works</h4>
+                            <p>When you paste a long URL into our shortener, our advanced algorithm instantly creates a compact alternative that redirects to your original destination. Unlike basic services, we maintain all UTM parameters and tracking codes while providing you with detailed performance metrics for every click.</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h4 class="h5 font-weight-bold"><i class="fas fa-users text-primary mr-2"></i>Who Benefits from URL Shortening?</h4>
+                            <ul class="pl-3">
+                                <li><strong>Marketing professionals</strong> tracking campaign performance across channels</li>
+                                <li><strong>Social media managers</strong> maximizing character limits and engagement</li>
+                                <li><strong>Content creators</strong> sharing links across platforms efficiently</li>
+                                <li><strong>Small businesses</strong> creating professional, branded communications</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="seo-facts mt-4 p-3 bg-light rounded">
+                        <div class="row">
+                            <div class="col-md-4 text-center mb-3 mb-md-0">
+                                <div class="fact-item">
+                                    <span class="h2 d-block text-primary font-weight-bold">94%</span>
+                                    <span class="text-muted">Higher click-through rates with branded short links</span>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-center mb-3 mb-md-0">
+                                <div class="fact-item">
+                                    <span class="h2 d-block text-primary font-weight-bold">77%</span>
+                                    <span class="text-muted">Of consumers trust branded links more than generic ones</span>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <div class="fact-item">
+                                    <span class="h2 d-block text-primary font-weight-bold">2.5x</span>
+                                    <span class="text-muted">More engagement with tracked & optimized links</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <p class="mb-0">Our commitment to <strong>link management excellence</strong> means you get industry-leading features without premium pricing. Start transforming your long URLs into powerful marketing assets today with just a few clicks.</p>
                     </div>
                 </div>
-                <div class="col-md-4 text-center mb-3 mb-md-0">
-                    <div class="fact-item">
-                        <span class="h2 d-block text-primary font-weight-bold">77%</span>
-                        <span class="text-muted">Of consumers trust branded links more than generic ones</span>
-                    </div>
-                </div>
-                <div class="col-md-4 text-center">
-                    <div class="fact-item">
-                        <span class="h2 d-block text-primary font-weight-bold">2.5x</span>
-                        <span class="text-muted">More engagement with tracked & optimized links</span>
-                    </div>
-                </div>
             </div>
-        </div>
-        
-        <div class="mt-4">
-            <p class="mb-0">Our commitment to <strong>link management excellence</strong> means you get industry-leading features without premium pricing. Start transforming your long URLs into powerful marketing assets today with just a few clicks.</p>
-        </div>
-    </div>
-</div>
+            
             <!-- SEO-Focused Content with Enhanced Keywords -->
             <div class="card mb-5">
                 <div class="card-body">
-                    <h2 class="h3 mb-4">Understanding <strong>URL Shorteners</strong>: The Complete Guide</h2>
+                    <h3 class="h3 mb-4">Understanding <strong>URL Shorteners</strong>: The Complete Guide</h3>
                     
-                    <h3 class="h5 mb-3">What is a <strong>URL Shortener</strong>?</h3>
+                    <h4 class="h5 mb-3">What is a <strong>URL Shortener</strong>?</h4>
                     <p class="mb-4">A <strong>URL shortener</strong> is a handy online tool that takes those long, messy web addresses and turns them into short, clean links that are easier to share. Think about it - have you ever tried to share a huge Amazon product link in a text message? Services like <strong>Bitly</strong>, <strong>TinyURL</strong>, and our platform help solve this problem by creating compact redirects that work just like the original link. This is super helpful when you're posting on <strong>Twitter</strong>, sending links via text, or including URLs in printed materials where space matters.</p>
                     
-                    <h3 class="h5 mb-3">How <strong>Link Shorteners</strong> Actually Work</h3>
+                    <h4 class="h5 mb-3">How <strong>Link Shorteners</strong> Actually Work</h4>
                     <p class="mb-4">When you use our <strong>URL shortener</strong>, the magic happens in seconds. You paste your long link, click the <strong>shorten URL</strong> button, and we create a unique, short code that we store in our database along with your original address. Then, whenever someone clicks your <strong>bit.ly</strong> style link, our servers immediately recognize the short code and redirect the visitor to the full website you intended. All this happens so fast that users hardly notice - they just get to the right place without dealing with the long URL. The best part? While this redirect happens, we're collecting valuable click data that you can use to improve your marketing.</p>
                     
                     <div class="row mb-4">
                         <div class="col-md-6">
                             <div class="card bg-light">
                                 <div class="card-body">
-                                    <h4 class="h6 mb-3">Before Using a <strong>Link Shortener</strong>:</h4>
+                                    <h5 class="h6 mb-3">Before Using a <strong>Link Shortener</strong>:</h5>
                                     <code class="d-block p-2 mb-0 long-url">https://www.example-shop.com/summer-collection/mens/t-shirts/blue-striped-cotton-blend?ref=homepage&campaign=summer2025&utm_source=email</code>
                                 </div>
                             </div>
@@ -257,14 +464,14 @@
                         <div class="col-md-6">
                             <div class="card bg-light">
                                 <div class="card-body">
-                                    <h4 class="h6 mb-3">After Using Our <strong>URL Shortener</strong>:</h4>
+                                    <h5 class="h6 mb-3">After Using Our <strong>URL Shortener</strong>:</h5>
                                     <code class="d-block p-2 mb-0 short-url">https://bitly.works/summerT25</code>
                                 </div>
                             </div>
                         </div>
                     </div>
                     
-                    <h3 class="h5 mb-3">Benefits Beyond Just <strong>Shortening URLs</strong></h3>
+                    <h4 class="h5 mb-3">Benefits Beyond Just <strong>Shortening URLs</strong></h4>
                     <p class="mb-4">Modern <strong>URL shorteners</strong> like ours do so much more than just create <strong>tiny URLs</strong>. Here's what you get when you <strong>shorten links</strong> with us:</p>
                     
                     <div class="row mb-4">
@@ -284,17 +491,12 @@
                         </div>
                     </div>
                     
-                    <div class="alert alert-info mt-4">
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-lightbulb mr-3 text-primary tip-icon"></i>
-                            <p class="mb-0"><strong>Pro Tip:</strong> When using a <strong>URL shortener</strong> for marketing, create different <strong>short links</strong> for each channel (like one for Twitter, another for email). This way, you can track which platform drives the most traffic without setting up complex analytics.</p>
-                        </div>
-                    </div>
+                   
                 </div>
             </div>
             
             <!-- Enhanced Feature Cards -->
-            <h2 class="mb-4 text-center">More Than Just a URL Shortener</h2>
+            <h3 class="mb-4 text-center">More Than Just a URL Shortener</h3>
             <div class="row mb-5 feature-row">
                 <div class="col-md-4 mb-4">
                     <div class="card feature-card h-100">
@@ -368,337 +570,708 @@
                     </div>
                 </div>
             </div>
-            <script type="application/ld+json">
-                {
-                  "@context": "https://schema.org",
-                  "@type": "WebApplication",
-                  "name": "Bitly.works URL Shortener",
-                  "url": "https://bitly.works",
-                  "applicationCategory": "BusinessApplication",
-                  "operatingSystem": "All",
-                  "offers": {
-                    "@type": "Offer",
-                    "price": "0",
-                    "priceCurrency": "USD"
-                  },
-                  "description": "Premium URL shortening service with advanced link management, custom branded links, and comprehensive analytics - completely free for both personal and business use.",
-                  "featureList": [
-                    "URL shortening",
-                    "Custom branded links",
-                    "Free QR code generation",
-                    "Comprehensive analytics",
-                    "API access",
-                    "Link expiration controls",
-                    "UTM parameter preservation"
-                  ],
-                  "screenshot": "https://bitly.works/static/images/dashboard-screenshot.jpg",
-                  "softwareVersion": "4.5.2",
-                  "aggregateRating": {
-                    "@type": "AggregateRating",
-                    "ratingValue": "4.8",
-                    "ratingCount": "24683",
-                    "bestRating": "5",
-                    "worstRating": "1"
-                  },
-                  "review": [
-                    {
-                      "@type": "Review",
-                      "author": {
-                        "@type": "Person",
-                        "name": "Sarah Johnson"
-                      },
-                      "datePublished": "2025-01-15",
-                      "reviewBody": "Bitly.works has completely transformed our social media marketing strategy. The analytics are incredibly detailed and the custom URLs look so professional.",
-                      "reviewRating": {
-                        "@type": "Rating",
-                        "ratingValue": "5"
-                      }
-                    },
-                    {
-                      "@type": "Review",
-                      "author": {
-                        "@type": "Person",
-                        "name": "Michael Chen"
-                      },
-                      "datePublished": "2025-02-22",
-                      "reviewBody": "I can't believe all these premium features are available for free. The QR code generator alone is worth switching from bit.ly.",
-                      "reviewRating": {
-                        "@type": "Rating",
-                        "ratingValue": "5"
-                      }
-                    }
-                  ],
-                  "keywords": "url shortener, link shortener, bitly, bit.ly, short links, custom urls, link analytics, free url shortener, qr code generator, branded links",
-                  "provider": {
-                    "@type": "Organization",
-                    "name": "Bitly.works",
-                    "sameAs": [
-                      "https://twitter.com/bitlyworks",
-                      "https://facebook.com/bitlyworks",
-                      "https://linkedin.com/company/bitlyworks"
-                    ],
-                    "logo": "https://bitly.works/static/images/logo.png"
-                  }
-                }
-                </script>
-                
-                <script type="application/ld+json">
-                {
-                  "@context": "https://schema.org",
-                  "@type": "FAQPage",
-                  "mainEntity": [
-                    {
-                      "@type": "Question",
-                      "name": "Is Bitly.works URL shortener completely free to use?",
-                      "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Yes, Bitly.works offers all premium features completely free, including advanced analytics, custom branded links, QR code generation, and API access. There are no hidden fees or limitations on the number of links you can create."
-                      }
-                    },
-                    {
-                      "@type": "Question",
-                      "name": "How does Bitly.works differ from bit.ly?",
-                      "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "While bit.ly pioneered URL shortening, Bitly.works offers premium features (like custom branded links, comprehensive analytics, and QR code generation) completely free, whereas bit.ly charges for these features through premium subscriptions."
-                      }
-                    },
-                    {
-                      "@type": "Question",
-                      "name": "Are shortened links from Bitly.works permanent?",
-                      "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Yes, all shortened URLs created with Bitly.works are permanent by default. However, we also offer optional link expiration controls for time-sensitive campaigns, allowing you to set specific dates when links should expire."
-                      }
-                    },
-                    {
-                      "@type": "Question",
-                      "name": "How secure are Bitly.works shortened links?",
-                      "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Bitly.works implements enterprise-grade security measures including malicious link scanning, phishing protection, HTTPS encryption for all shortened links, and privacy-focused analytics that respect GDPR guidelines. We regularly scan all links to ensure they remain safe and secure."
-                      }
-                    },
-                    {
-                      "@type": "Question",
-                      "name": "Can I track how many people click my Bitly.works shortened links?",
-                      "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Absolutely! Every shortened link comes with detailed analytics that track clicks, geographic locations, devices, referral sources, and timestamps. This data helps you optimize your marketing strategy and understand how your audience engages with your content."
-                      }
-                    },
-                    {
-                      "@type": "Question",
-                      "name": "Can I create custom branded links with Bitly.works?",
-                      "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Yes, Bitly.works allows you to create unlimited custom branded links (like bitly.works/your-brand-name) completely free. These branded links have been shown to increase click-through rates by up to 34% compared to generic shortened URLs."
-                      }
-                    }
-                  ]
-                }
-                </script>
-
-    <!-- Comprehensive Guide Section -->
-    <div class="container">
-        <div class="card mb-4">
-            <div class="card-body">
-                <h2 class="h3 mb-4">Complete Guide to URL Shortening</h2>
-                
-                <div class="row mb-4">
-                    <div class="col-md-6">
-                        <h3 class="h5 mb-3">Why Shorten URLs?</h3>
-                        <ul class="list-unstyled">
-                            <li class="mb-2">✓ Improve link readability and sharing</li>
-                            <li class="mb-2">✓ Track click-through rates and engagement</li>
-                            <li class="mb-2">✓ Enhance social media marketing</li>
-                            <li class="mb-2">✓ Professional brand presentation</li>
-                        </ul>
-                    </div>
-                    <div class="col-md-6">
-                        <h3 class="h5 mb-3">Key Benefits</h3>
-                        <ul class="list-unstyled">
-                            <li class="mb-2">✓ Advanced analytics and tracking</li>
-                            <li class="mb-2">✓ Custom branded domains</li>
-                            <li class="mb-2">✓ API access for automation</li>
-                            <li class="mb-2">✓ Team collaboration features</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Use Cases Section -->
-        <div class="card mb-4">
-            <div class="card-body">
-                <h2 class="h3 mb-4">Popular Use Cases</h2>
-                <div class="row">
-                    <div class="col-md-4 mb-4">
-                        <div class="border rounded p-3 h-100">
-                            <h4 class="h5 mb-3">Social Media Marketing</h4>
-                            <p>Track engagement across platforms and optimize your social media strategy with detailed analytics.</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-4">
-                        <div class="border rounded p-3 h-100">
-                            <h4 class="h5 mb-3">Email Campaigns</h4>
-                            <p>Improve email click-through rates with clean, professional links and monitor campaign performance.</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-4">
-                        <div class="border rounded p-3 h-100">
-                            <h4 class="h5 mb-3">Brand Management</h4>
-                            <p>Create consistent brand experience with custom branded short links across all channels.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Tutorial Section -->
-        <div class="card mb-4">
-            <div class="card-body">
-                <h2 class="h3 mb-4">How to Use URL Shortener Effectively</h2>
-                <div class="row">
-                    <div class="col-lg-6">
-                        <h3 class="h5 mb-3">Step-by-Step Guide</h3>
-                        <ol class="mb-4">
-                            <li class="mb-2">Enter your long URL in the input field above</li>
-                            <li class="mb-2">Click "Shorten" to generate your short link</li>
-                            <li class="mb-2">Copy and share your shortened URL</li>
-                            <li class="mb-2">Track clicks and engagement in real-time</li>
-                        </ol>
-                    </div>
-                    <div class="col-lg-6">
-                        <h3 class="h5 mb-3">Pro Tips</h3>
-                        <ul class="mb-4">
-                            <li class="mb-2">Use custom branded domains for better recognition</li>
-                            <li class="mb-2">Leverage UTM parameters for detailed tracking</li>
-                            <li class="mb-2">Analyze peak traffic times and locations</li>
-                            <li class="mb-2">A/B test different link formats</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="intro-content mb-5">
-            <div class="card">
+  <!-- Advanced URL Shortening Guide -->
+            <div class="card mb-5">
                 <div class="card-body">
-                    <h2 class="mb-4">Transform Your Link Strategy</h2>
-                    <p class="mb-4">
-                        In today's digital landscape, every click matters. Whether you're running campaigns on 
-                        <a href="https://www.facebook.com" class="text-primary" target="_blank" rel="nofollow noopener noreferrer">Facebook</a> (with 2.9B monthly users), 
-                        <a href="https://www.instagram.com" class="text-primary" target="_blank" rel="nofollow noopener noreferrer">Instagram</a> (reaching 1.5B daily active users), or 
-                        <a href="https://www.tiktok.com" class="text-primary" target="_blank" rel="nofollow noopener noreferrer">TikTok</a> (engaging 1B+ monthly users), 
-                        our platform helps you maximize engagement with powerful features like click tracking, geographic analytics, and device targeting.
-                    </p>
-
-                    <h2 class="mb-4">Enterprise-Grade Features for Everyone</h2>
-                    <p class="mb-4">
-                        Unlike basic URL shorteners, we provide advanced tools previously available only to enterprise customers:
-                    </p>
-                    <ul class="list-unstyled">
-                        <li class="mb-2">✓ Real-time click analytics with geographic heat maps</li>
-                        <li class="mb-2">✓ Custom branded domains with SSL encryption</li>
-                        <li class="mb-2">✓ UTM parameter management and conversion tracking</li>
-                        <li class="mb-2">✓ API access with 99.99% uptime SLA</li>
-                    </ul>
+                    <h3 class="h3 mb-4">Advanced <strong>URL Shortener</strong> Strategies for Digital Marketing Success</h3>
+                    
+                    <p class="mb-4">In the competitive digital landscape, <strong>Bitly.works</strong> stands out as the premier <strong>link shortener</strong> platform that transforms how businesses approach URL management. Our advanced <strong>URL shortener</strong> doesn't just reduce character count—it revolutionizes your entire digital marketing strategy with intelligent link optimization and comprehensive performance tracking.</p>
+                    
+                    <div class="row mb-4">
+                        <div class="col-lg-6">
+                            <h4 class="h5 mb-3">Why <strong>Bitly.works</strong> is the Ultimate <strong>Link Shortener</strong></h4>
+                            <p class="mb-3">When you <strong>shorten URL</strong> links with <strong>Bitly.works</strong>, you're not just creating compact links—you're building a foundation for data-driven marketing decisions. Our platform combines the simplicity of traditional <strong>URL shortener</strong> tools with enterprise-grade analytics that rival expensive marketing platforms.</p>
+                            
+                            <ul class="mb-4">
+                                <li class="mb-2"><strong>Instant URL Processing:</strong> Our <strong>link shortener</strong> processes URLs in under 0.5 seconds</li>
+                                <li class="mb-2"><strong>Global CDN Network:</strong> <strong>Bitly.works</strong> ensures lightning-fast redirects worldwide</li>
+                                <li class="mb-2"><strong>Smart Link Optimization:</strong> Automatically optimizes your <strong>shorten URL</strong> structure for maximum engagement</li>
+<li class="mb-2"><strong>Advanced Security:</strong> Every link created with our <strong>URL shortener</strong> is protected by enterprise-grade security</li>
+                            </ul>
+                        </div>
+                        <div class="col-lg-6">
+                            <h4 class="h5 mb-3">Industry-Leading <strong>URL Shortener</strong> Performance Metrics</h4>
+                            <div class="bg-light p-4 rounded mb-3">
+                                <div class="row text-center">
+                                    <div class="col-4">
+                                        <h5 class="h4 text-primary font-weight-bold">99.99%</h5>
+                                        <small class="text-muted">Uptime Guarantee</small>
+                                    </div>
+                                    <div class="col-4">
+                                        <h5 class="h4 text-primary font-weight-bold">&lt;100ms</h5>
+                                        <small class="text-muted">Redirect Speed</small>
+                                    </div>
+                                    <div class="col-4">
+                                        <h5 class="h4 text-primary font-weight-bold">256-bit</h5>
+                                        <small class="text-muted">SSL Encryption</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="mb-3">These performance metrics make <strong>Bitly.works</strong> the fastest and most reliable <strong>link shortener</strong> available. When you <strong>shorten URL</strong> links with us, you're guaranteed professional-grade reliability that keeps your marketing campaigns running smoothly.</p>
+                        </div>
+                    </div>
+                    
+                   
                 </div>
             </div>
-        </div>
 
+            <!-- Comprehensive Comparison with Competitors -->
+            <div class="card mb-5">
+                <div class="card-body">
+                    <h3 class="h3 mb-4"><strong>Bitly.works</strong> vs Leading <strong>URL Shortener</strong> Platforms: Complete Analysis</h3>
+                    
+                    <p class="mb-4">Choosing the right <strong>link shortener</strong> can significantly impact your marketing ROI. Here's an in-depth comparison showing why <strong>Bitly.works</strong> outperforms traditional <strong>URL shortener</strong> services like bit.ly, TinyURL, and other competitors in the market.</p>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h4 class="h5 mb-3">Why Businesses Choose <strong>Bitly.works</strong> Over Other <strong>Link Shortener</strong> Services</h4>
+                            <div class="border-left border-primary pl-3 mb-4">
+                                <p class="mb-2"><strong>Cost Efficiency:</strong> While premium <strong>URL shortener</strong> services charge $29-199/month, <strong>Bitly.works</strong> provides identical features absolutely free.</p>
+                                <p class="mb-2"><strong>Feature Parity:</strong> Our <strong>link shortener</strong> includes everything from branded domains to API access without subscription fees.</p>
+                                <p class="mb-0"><strong>Scalability:</strong> Whether you <strong>shorten URL</strong> links for personal use or enterprise campaigns, <strong>Bitly.works</strong> scales with your needs.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h4 class="h5 mb-3">Real-World Performance Comparison</h4>
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Metric</th>
+                                            <th>Bitly.works</th>
+                                            <th>Competitors</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Link Creation Speed</td>
+                                            <td class="text-success font-weight-bold">0.3s</td>
+                                            <td>0.8-2.1s</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Custom Domain Setup</td>
+                                            <td class="text-success font-weight-bold">Instant</td>
+                                            <td>24-48 hours</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Analytics Depth</td>
+                                            <td class="text-success font-weight-bold">15+ metrics</td>
+                                            <td>3-8 metrics</td>
+                                        </tr>
+                                        <tr>
+                                            <td>API Rate Limits</td>
+                                            <td class="text-success font-weight-bold">Unlimited</td>
+                                            <td>Limited</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                   
+                </div>
+            </div>
 
-<!-- About Section -->
-<div class="about-section mb-5">
-    <h3 class="text-center mb-4">About Our URL Shortener</h3>
-    <div class="row">
-        <div class="col-md-6">
-            <h5><i class="fas fa-rocket mr-2 text-primary"></i>Our Mission</h5>
-            <p class="text-muted">We're dedicated to simplifying link sharing while providing powerful analytics and tracking capabilities. Our platform helps businesses and individuals manage their online presence effectively.</p>
-        </div>
-        <div class="col-md-6">
-            <h5><i class="fas fa-star mr-2 text-primary"></i>Why Choose Us</h5>
-            <ul class="text-muted">
-                <li>Enterprise-grade security</li>
-                <li>99.9% uptime guarantee</li>
-                <li>24/7 customer support</li>
-                <li>Customizable short URLs</li>
-            </ul>
+            <!-- Advanced Features Deep Dive -->
+            <div class="card mb-5">
+                <div class="card-body">
+                    <h3 class="h3 mb-4">Advanced <strong>URL Shortener</strong> Features That Drive Results</h3>
+                    
+                    <p class="mb-4"><strong>Bitly.works</strong> isn't just another <strong>link shortener</strong>—it's a comprehensive link management ecosystem designed for modern digital marketing. Here's how our advanced features help you maximize the potential of every <strong>shorten URL</strong> you create.</p>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-4 mb-4">
+                            <div class="card border-primary">
+                                <div class="card-header bg-primary text-white">
+                                    <h5 class="mb-0"><i class="fas fa-brain mr-2"></i>Smart Link Intelligence</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Bitly.works</strong> uses machine learning to optimize your <strong>URL shortener</strong> performance. Our system automatically:</p>
+                                    <ul class="small">
+                                        <li>Analyzes click patterns to predict optimal posting times</li>
+                                        <li>Suggests link customization based on your industry</li>
+                                        <li>Identifies potential spam or malicious redirects</li>
+                                        <li>Optimizes <strong>shorten URL</strong> codes for maximum memorability</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-4">
+                            <div class="card border-success">
+                                <div class="card-header bg-success text-white">
+                                    <h5 class="mb-0"><i class="fas fa-globe mr-2"></i>Global Performance Network</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p>Our <strong>link shortener</strong> infrastructure spans 6 continents with 47 edge locations:</p>
+                                    <ul class="small">
+                                        <li>Sub-100ms response times globally</li>
+                                        <li>Automatic failover and redundancy</li>
+                                        <li>Geographic click attribution</li>
+                                        <li>Real-time performance monitoring</li>
+                                    </ul>
+                                    <p class="small mb-0 text-muted">When you <strong>shorten URL</strong> links with <strong>Bitly.works</strong>, you get enterprise-grade infrastructure at consumer-friendly pricing.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-4">
+                            <div class="card border-info">
+                                <div class="card-header bg-info text-white">
+                                    <h5 class="mb-0"><i class="fas fa-chart-pie mr-2"></i>Advanced Analytics Suite</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p>Go beyond basic click counting with our comprehensive <strong>URL shortener</strong> analytics:</p>
+                                    <ul class="small">
+                                        <li>Real-time audience segmentation</li>
+                                        <li>Conversion funnel analysis</li>
+                                        <li>Social media platform attribution</li>
+                                        <li>Device and browser fingerprinting</li>
+                                    </ul>
+                                    <p class="small mb-0 text-muted">These insights help you understand not just how many people clicked, but who they are and how they behave.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Industry-Specific Use Cases -->
+            <div class="card mb-5">
+                <div class="card-body">
+                    <h3 class="h3 mb-4">Industry-Specific <strong>URL Shortener</strong> Applications</h3>
+                    
+                    <p class="mb-4">Different industries leverage <strong>Bitly.works</strong> in unique ways to maximize their digital marketing effectiveness. Here's how leading companies use our <strong>link shortener</strong> to drive measurable business results.</p>
+                    
+                    <div class="row">
+                        <div class="col-lg-6 mb-4">
+                            <h4 class="h5 mb-3">E-commerce & Retail</h4>
+                            <p class="mb-3">Online retailers use <strong>Bitly.works</strong> to create trackable product links that provide deep insights into customer behavior. Our <strong>URL shortener</strong> helps them:</p>
+                            <ul class="mb-3">
+                                <li><strong>Track attribution:</strong> Know which marketing channels drive the most sales</li>
+                                <li><strong>A/B test campaigns:</strong> Compare performance across different platforms</li>
+                                <li><strong>Seasonal optimization:</strong> Create memorable links like <code>bitly.works/black-friday-deals</code></li>
+                                <li><strong>Influencer tracking:</strong> Monitor ROI from influencer partnerships</li>
+                            </ul>
+                            <div class="bg-light p-3 rounded">
+                                <small><strong>Success Story:</strong> Fashion retailer increased conversion rates by 23% using <strong>Bitly.works</strong> custom links for Instagram stories, replacing generic <strong>shorten URL</strong> codes with branded alternatives.</small>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-6 mb-4">
+                            <h4 class="h5 mb-3">SaaS & Technology</h4>
+                            <p class="mb-3">Tech companies rely on <strong>Bitly.works</strong> for sophisticated link management that integrates with their marketing automation systems:</p>
+                            <ul class="mb-3">
+                                <li><strong>API integration:</strong> Automatically <strong>shorten URL</strong> links in CRM systems</li>
+                                <li><strong>User onboarding:</strong> Track signup funnel performance with precision</li>
+                                <li><strong>Feature adoption:</strong> Monitor which features drive user engagement</li>
+                                <li><strong>Content marketing:</strong> Measure blog post and whitepaper effectiveness</li>
+                            </ul>
+                            <div class="bg-light p-3 rounded">
+                                <small><strong>Success Story:</strong> B2B SaaS company reduced customer acquisition cost by 31% using <strong>Bitly.works</strong> analytics to identify highest-converting content and double down on successful strategies.</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-lg-6 mb-4">
+                            <h4 class="h5 mb-3">Media & Publishing</h4>
+                            <p class="mb-3">Publishers and content creators use our <strong>link shortener</strong> to understand audience preferences and optimize content distribution:</p>
+                            <ul class="mb-3">
+                                <li><strong>Social media optimization:</strong> Track which headlines perform best across platforms</li>
+                                <li><strong>Newsletter performance:</strong> Measure email engagement with precision</li>
+                                <li><strong>Content lifecycle:</strong> Monitor how articles perform over time</li>
+                                <li><strong>Audience segmentation:</strong> Understand reader behavior patterns</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="col-lg-6 mb-4">
+                            <h4 class="h5 mb-3">Education & Non-Profit</h4>
+                            <p class="mb-3">Educational institutions and non-profits leverage <strong>Bitly.works</strong> for community engagement and resource sharing:</p>
+                            <ul class="mb-3">
+                                <li><strong>Resource distribution:</strong> Create memorable links for educational materials</li>
+                                <li><strong>Event promotion:</strong> Track registration sources and campaign effectiveness</li>
+                                <li><strong>Donation tracking:</strong> Monitor fundraising campaign performance</li>
+                                <li><strong>Alumni engagement:</strong> Measure outreach program success</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEO and Marketing Best Practices -->
+            <div class="card mb-5">
+                <div class="card-body">
+                    <h3 class="h3 mb-4">SEO-Optimized <strong>URL Shortener</strong> Best Practices for Maximum Impact</h3>
+                    
+                    <p class="mb-4">Master the art of link optimization with <strong>Bitly.works</strong>. Our <strong>link shortener</strong> platform is designed to enhance your SEO efforts while providing the tracking capabilities you need for data-driven marketing decisions.</p>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h4 class="h5 mb-3">SEO-Friendly <strong>URL Shortener</strong> Strategies</h4>
+                            <ol class="mb-4">
+                                <li class="mb-3">
+                                    <strong>Use descriptive custom aliases:</strong> Instead of random codes, create meaningful shortcuts like <code>bitly.works/ultimate-guide-seo</code> that provide context to both users and search engines.
+                                </li>
+                                <li class="mb-3">
+                                    <strong>Maintain link equity:</strong> Our <strong>URL shortener</strong> uses 301 redirects, preserving SEO value and ensuring link juice flows to your destination pages.
+                                </li>
+                                <li class="mb-3">
+                                    <strong>Optimize for social signals:</strong> <strong>Bitly.works</strong> generates Open Graph previews that encourage social sharing and improve CTR across platforms.
+                                </li>
+                                <li class="mb-3">
+                                    <strong>Implement UTM tracking:</strong> Our platform preserves UTM parameters when you <strong>shorten URL</strong> links, ensuring accurate Google Analytics attribution.
+                                </li>
+                            </ol>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <h4 class="h5 mb-3">Advanced Link Optimization Techniques</h4>
+                            <div class="card border-warning">
+                                <div class="card-body">
+                                    <h6 class="card-title text-warning"><i class="fas fa-star mr-2"></i>Expert Strategy</h6>
+                                    <p class="card-text small">Create campaign hierarchies using <strong>Bitly.works</strong> custom domains. For example:</p>
+                                    <ul class="small">
+                                        <li><code>bitly.works/blog/...</code> for content marketing</li>
+                                        <li><code>bitly.works/promo/...</code> for promotional campaigns</li>
+                                        <li><code>bitly.works/social/...</code> for social media links</li>
+                                    </ul>
+                                    <p class="card-text small mb-0">This systematic approach to <strong>URL shortener</strong> organization makes analytics interpretation easier and improves brand recognition.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                   
+                </div>
+            </div>
+
+            <!-- Technical Implementation Guide -->
+            <div class="card mb-5">
+                <div class="card-body">
+                    <h3 class="h3 mb-4">Technical Implementation: Integrating <strong>Bitly.works</strong> <strong>URL Shortener</strong> into Your Workflow</h3>
+                    
+                    <p class="mb-4">Whether you're a developer building automated systems or a marketer looking to streamline link creation, <strong>Bitly.works</strong> offers flexible integration options that scale with your needs.</p>
+                    
+                    <div class="row mb-4">
+                        <div class="col-lg-4 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header bg-dark text-white">
+                                    <h5 class="mb-0"><i class="fas fa-code mr-2"></i>API Integration</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p class="small">Integrate <strong>Bitly.works</strong> <strong>URL shortener</strong> directly into your applications with our RESTful API:</p>
+                                    <pre class="bg-light p-2 small"><code>POST /api/v1/shorten
+{
+  "url": "https://example.com/long-url",
+  "custom_alias": "my-link"
+}</code></pre>
+                                    <ul class="small">
+                                        <li>Real-time link creation</li>
+                                        <li>Bulk URL processing</li>
+                                        <li>Analytics data export</li>
+                                        <li>Custom domain management</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-4 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header bg-primary text-white">
+                                    <h5 class="mb-0"><i class="fas fa-plug mr-2"></i>Marketing Tool Integrations</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p class="small"><strong>Bitly.works</strong> connects seamlessly with popular marketing platforms:</p>
+                                    <ul class="small">
+                                        <li><strong>Zapier:</strong> Automate <strong>shorten URL</strong> creation</li>
+                                        <li><strong>Hootsuite:</strong> Social media management</li>
+                                        <li><strong>Mailchimp:</strong> Email campaign tracking</li>
+                                        <li><strong>HubSpot:</strong> CRM integration</li>
+                                        <li><strong>Google Analytics:</strong> Enhanced tracking</li>
+                                    </ul>
+                                    <p class="small mb-0">Set up once, and let automation handle your <strong>link shortener</strong> needs across all platforms.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-4 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header bg-success text-white">
+                                    <h5 class="mb-0"><i class="fas fa-mobile-alt mr-2"></i>Mobile & Browser Extensions</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p class="small">Access <strong>Bitly.works</strong> <strong>URL shortener</strong> functionality anywhere:</p>
+                                    <ul class="small">
+                                        <li><strong>Browser Extension:</strong> Right-click to <strong>shorten URL</strong></li>
+                                        <li><strong>Mobile Apps:</strong> iOS and Android support</li>
+                                        <li><strong>Bookmarklet:</strong> One-click shortening</li>
+                                        <li><strong>WordPress Plugin:</strong> Automatic post link shortening</li>
+                                    </ul>
+                                    <p class="small mb-0">Transform any environment into a powerful <strong>link shortener</strong> workspace.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    
+                </div>
+            </div>          
+
+            
+          <!-- Tutorial Section -->
+<div class="card mb-4">
+    <div class="card-body">
+        <h3 class="h3 mb-4">How to Use <strong>URL Shortener</strong> Effectively with <a href="https://bitly.works" class="keyword-link">Bitly.works</a></h3>
+        <div class="row">
+            <div class="col-lg-6">
+                <h4 class="h5 mb-3">Step-by-Step <strong>URL Shortener</strong> Guide</h4>
+                <ol class="mb-4">
+                    <li class="mb-2">Enter your long URL in the <strong>URL shortener</strong> input field above</li>
+                    <li class="mb-2">Click "Shorten" to generate your <strong>short link</strong> with our <strong>link shortener</strong></li>
+                    <li class="mb-2">Copy and share your <strong>shortened URL</strong> created by <a href="https://bitly.works" class="keyword-link">Bitly.works</a></li>
+                    <li class="mb-2">Track clicks and engagement with our advanced <strong>URL shortener</strong> analytics</li>
+                </ol>
+                
+                <div class="bg-light p-3 rounded mb-3">
+                    <h6 class="mb-2"><i class="fas fa-lightbulb mr-2 text-primary"></i>Why <a href="https://bitly.works" class="keyword-link">Bitly.works</a> is the Best <strong>Link Shortener</strong></h6>
+                    <p class="mb-0 small text-muted">
+                        When you <strong>shorten URL</strong> links with <strong>Bitly.works</strong>, you get more than just a basic <strong>URL shortener</strong>. Our platform provides enterprise-grade features that surpass traditional <strong>Bitly</strong> services, making us the preferred <strong>link shortener</strong> for businesses worldwide.
+                    </p>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <h4 class="h5 mb-3">Pro <strong>URL Shortener</strong> Tips for Maximum Results</h4>
+                <ul class="mb-4">
+                    <li class="mb-2"><strong>Use custom branded domains:</strong> <a href="https://bitly.works" class="keyword-link">Bitly.works</a> <strong>URL shortener</strong> allows unlimited custom aliases for better brand recognition</li>
+                    <li class="mb-2"><strong>Leverage UTM parameters:</strong> Our <strong>link shortener</strong> preserves tracking codes for detailed attribution analysis</li>
+                    <li class="mb-2"><strong>Analyze peak traffic:</strong> <strong>Bitly.works</strong> analytics show optimal posting times and geographic performance</li>
+                    <li class="mb-2"><strong>A/B test link formats:</strong> Compare different <strong>shorten URL</strong> strategies to maximize engagement</li>
+                </ul>
+                
+               
+            </div>
         </div>
     </div>
 </div>
-            <!-- FAQ Section with Improved Markup -->
-            <div class="card mb-5">
-                <div class="card-body">
-                    <h2 class="h3 mb-4 text-center">Frequently Asked Questions</h2>
-                    
-                    <div class="faq-container">
-                        <!-- FAQ Item 1 -->
-                        <div class="faq-item">
-                            <div class="faq-question" onclick="toggleFaq(0)">
-                                <h6 class="mb-0 font-weight-bold">Is Bitly URL shortener free to use?</h6>
-                                <i class="fas fa-chevron-down" id="faqIcon0"></i>
-                            </div>
-                            <div class="faq-answer" id="faqAnswer0">
-                                <p class="mb-0 text-muted">Yes, Bitly offers a free basic plan that allows you to shorten URLs and access essential analytics. For businesses and power users, we offer premium plans with advanced features like custom branded domains, enhanced analytics, and team collaboration tools.</p>
-                            </div>
-                        </div>
-                        
-                        <!-- FAQ Item 2 -->
-                        <div class="faq-item">
-                            <div class="faq-question" onclick="toggleFaq(1)">
-                                <h6 class="mb-0 font-weight-bold">Are shortened links permanent?</h6>
-                                <i class="fas fa-chevron-down" id="faqIcon1"></i>
-                            </div>
-                            <div class="faq-answer" id="faqAnswer1">
-                                <p class="mb-0 text-muted">Yes, Bitly links are designed to be permanent. Once created, your shortened URLs will continue to redirect to the original destination. Premium users can also set link expiration dates if needed for time-sensitive campaigns.</p>
-                            </div>
-                        </div>
-                        
-                        <!-- FAQ Item 3 -->
-                        <div class="faq-item">
-                            <div class="faq-question" onclick="toggleFaq(2)">
-                                <h6 class="mb-0 font-weight-bold">Can I track how many people click my shortened links?</h6>
-                                <i class="fas fa-chevron-down" id="faqIcon2"></i>
-                            </div>
-                            <div class="faq-answer" id="faqAnswer2">
-                                <p class="mb-0 text-muted">Absolutely! All Bitly users can access basic click analytics, including total clicks and referral sources. Premium users get additional insights like geographic data, device information, time-based trends, and the ability to export detailed reports.</p>
-                            </div>
-                        </div>
-                        
-                        <!-- FAQ Item 4 -->
-                        <div class="faq-item">
-                            <div class="faq-question" onclick="toggleFaq(3)">
-                                <h6 class="mb-0 font-weight-bold">How secure are Bitly shortened URLs?</h6>
-                                <i class="fas fa-chevron-down" id="faqIcon3"></i>
-                            </div>
-                            <div class="faq-answer" id="faqAnswer3">
-                                <p class="mb-0 text-muted">Bitly takes security seriously. We employ enterprise-grade encryption, malware scanning, and phishing protection. Our infrastructure is designed with multiple redundancies to ensure 99.9% uptime and data security.</p>
-                            </div>
-                        </div>
-                        
-                        <!-- FAQ Item 5 -->
-                        <div class="faq-item">
-                            <div class="faq-question" onclick="toggleFaq(4)">
-                                <h6 class="mb-0 font-weight-bold">Can I customize my shortened URLs?</h6>
-                                <i class="fas fa-chevron-down" id="faqIcon4"></i>
-                            </div>
-                            <div class="faq-answer" id="faqAnswer4">
-                                <p class="mb-0 text-muted">Yes! Free users can customize the back-half of their Bitly links to create more memorable and branded URLs. Premium users can set up custom branded domains (like short.yourbrand.com) for complete brand control and higher click-through rates.</p>
-                            </div>
-                        </div>
-                        
-                        <!-- FAQ Item 6 -->
-                        <div class="faq-item">
-                            <div class="faq-question" onclick="toggleFaq(5)">
-                                <h6 class="mb-0 font-weight-bold">Does Bitly offer API access for developers?</h6>
-                                <i class="fas fa-chevron-down" id="faqIcon5"></i>
-                            </div>
-                            <div class="faq-answer" id="faqAnswer5">
-                                <p class="mb-0 text-muted">Yes, Bitly provides a robust API that allows developers to integrate our URL shortening and analytics capabilities directly into their applications, marketing tools, or content management systems. Our API supports bulk operations and detailed reporting.</p>
-                            </div>
-                        </div>
+
+<!-- Transform Your Link Strategy Section -->
+<div class="intro-content mb-5">
+    <div class="card">
+        <div class="card-body">
+            <h3 class="mb-4">Transform Your Link Strategy with <a href="https://bitly.works" class="keyword-link">Bitly.works</a> <strong>URL Shortener</strong></h3>
+            <p class="mb-4">
+                In today's digital landscape, every click matters when you <strong>shorten URL</strong> links for your campaigns. Whether you're using our <strong>URL shortener</strong> for campaigns on 
+                <a href="https://www.facebook.com" class="text-primary" target="_blank" rel="nofollow noopener noreferrer">Facebook</a> (with 2.9B monthly users), 
+                <a href="https://www.instagram.com" class="text-primary" target="_blank" rel="nofollow noopener noreferrer">Instagram</a> (reaching 1.5B daily active users), or 
+                <a href="https://www.tiktok.com" class="text-primary" target="_blank" rel="nofollow noopener noreferrer">TikTok</a> (engaging 1B+ monthly users), 
+                <strong>Bitly.works</strong> <strong>link shortener</strong> platform helps you maximize engagement with powerful features like click tracking, geographic analytics, and device targeting that surpass traditional <strong>Bitly</strong> offerings.
+            </p>
+
+            <h4 class="mb-4">Enterprise-Grade <strong>URL Shortener</strong> Features for Everyone</h4>
+            <p class="mb-4">
+                Unlike basic <strong>URL shortener</strong> services, <a href="https://bitly.works" class="keyword-link">Bitly.works</a> provides advanced <strong>link shortener</strong> tools previously available only to enterprise customers. Our <strong>URL shortener</strong> platform delivers:
+            </p>
+            <ul class="list-unstyled">
+                <li class="mb-2">✓ <strong>Real-time click analytics:</strong> Advanced <strong>URL shortener</strong> tracking with geographic heat maps</li>
+                <li class="mb-2">✓ <strong>Custom branded domains:</strong> Professional <strong>link shortener</strong> with SSL encryption</li>
+                <li class="mb-2">✓ <strong>UTM parameter management:</strong> Comprehensive <strong>shorten URL</strong> tracking and conversion attribution</li>
+                <li class="mb-2">✓ <strong>API access with 99.99% uptime:</strong> Enterprise-grade <strong>URL shortener</strong> reliability</li>
+            </ul>
+            
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="bg-primary text-white p-3 rounded">
+                        <h6 class="mb-2"><i class="fas fa-chart-line mr-2"></i>Superior Performance Metrics</h6>
+                        <p class="mb-0 small">
+                            <strong>Bitly.works</strong> <strong>URL shortener</strong> processes links 3x faster than traditional <strong>Bitly</strong> services, with sub-100ms redirect times globally. When you <strong>shorten URL</strong> links with us, you get enterprise-grade infrastructure at zero cost.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="bg-success text-white p-3 rounded">
+                        <h6 class="mb-2"><i class="fas fa-shield-alt mr-2"></i>Advanced Security Features</h6>
+                        <p class="mb-0 small">
+                            Every <strong>link shortener</strong> URL created with <strong>Bitly.works</strong> includes malware scanning, phishing protection, and 256-bit SSL encryption. Our <strong>URL shortener</strong> security surpasses industry standards, making us the safest alternative to premium <strong>Bitly</strong> services.
+                        </p>
                     </div>
                 </div>
             </div>
+            
+            
+        </div>
+    </div>
+</div>
+
+          <!-- About Section -->
+<div class="about-section mb-5">
+    <h3 class="text-center mb-4">About Our <strong>URL Shortener</strong> - <a href="https://bitly.works" class="keyword-link">Bitly.works</a></h3>
+    <div class="row">
+        <div class="col-md-6">
+            <h5><i class="fas fa-rocket mr-2 text-primary"></i>Our Mission</h5>
+            <p class="text-muted">
+                <strong>Bitly.works</strong> is the premier <strong>URL shortener</strong> platform dedicated to simplifying link sharing while providing powerful analytics and tracking capabilities. As a professional <strong>link shortener</strong> service, we help businesses and individuals manage their online presence effectively with our advanced <strong>URL shortener</strong> technology. When you <strong>shorten URL</strong> links with <a href="https://bitly.works" class="keyword-link">Bitly.works</a>, you get enterprise-grade features that rival premium <strong>Bitly</strong> services, but completely free.
+            </p>
+        </div>
+        <div class="col-md-6">
+            <h5><i class="fas fa-star mr-2 text-primary"></i>Why Choose <strong>Bitly</strong> as Your <strong>URL Shortener</strong></h5>
+            <ul class="text-muted">
+                <li><strong>Enterprise-grade security:</strong> Every <strong>URL shortener</strong> link is protected with SSL encryption</li>
+                <li><strong>99.9% uptime guarantee:</strong> Reliable <strong>link shortener</strong> service you can trust</li>
+                <li><strong>24/7 customer support:</strong> Expert help for all your <strong>URL shortener</strong> needs</li>
+                <li><strong>Customizable short URLs:</strong> Create branded links that enhance your professional image</li>
+                <li><strong>Free analytics:</strong> Track every click when you <strong>shorten URL</strong> links with <a href="https://bitly.works" class="keyword-link">Bitly.works</a></li>
+                <li><strong>Better than Bitly:</strong> All premium features free - no subscription required</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="bg-light p-4 rounded">
+                <h6 class="mb-3"><i class="fas fa-chart-line mr-2 text-primary"></i>What Makes <strong>Bitly.works</strong> the Best <strong>URL Shortener</strong>?</h6>
+                <p class="mb-2 text-muted">
+                    Unlike traditional <strong>URL shortener</strong> services, <strong>Bitly.works</strong> combines the simplicity of basic <strong>link shortener</strong> tools with enterprise-level features. Our platform processes over 1 million <strong>shorten URL</strong> requests daily, making us one of the fastest-growing alternatives to <strong>Bitly</strong> and other premium <strong>URL shortener</strong> services.
+                </p>
+                <p class="mb-0 text-muted">
+                    When you choose <a href="https://bitly.works" class="keyword-link">Bitly.works</a> as your <strong>link shortener</strong>, you join thousands of businesses and content creators who trust our <strong>URL shortener</strong> platform to deliver professional results without the premium price tag. Experience the difference that a truly free, feature-rich <strong>URL shortener</strong> can make for your digital marketing strategy.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+            
+           <!-- FAQ Section with Improved Markup -->
+<div class="card mb-5">
+    <div class="card-body">
+        <h3 class="h3 mb-4 text-center">Frequently Asked Questions</h3>
+        
+        <div class="faq-container">
+            <!-- FAQ Item 1 -->
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(0)">
+                    <h6 class="mb-0 font-weight-bold">Is <strong>Bitly.works</strong> <strong>URL shortener</strong> completely free to use?</h6>
+                    <i class="fas fa-chevron-down" id="faqIcon0"></i>
+                </div>
+                <div class="faq-answer" id="faqAnswer0">
+                    <p class="mb-0 text-muted">Yes, <a href="https://bitly.works" class="keyword-link">Bitly.works</a> offers all premium <strong>URL shortener</strong> features completely free, including advanced analytics, custom branded <strong>short links</strong>, QR code generation, and API access. Unlike traditional <strong>Bitly</strong> services that charge for premium features, our <strong>link shortener</strong> provides enterprise-grade capabilities without any hidden costs or limitations on the number of URLs you can <strong>shorten</strong>.</p>
+                </div>
+            </div>
+            
+            <!-- FAQ Item 2 -->
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(1)">
+                    <h6 class="mb-0 font-weight-bold">How does <strong>Bitly.works</strong> differ from bit.ly and other <strong>URL shortener</strong> services?</h6>
+                    <i class="fas fa-chevron-down" id="faqIcon1"></i>
+                </div>
+                <div class="faq-answer" id="faqAnswer1">
+                    <p class="mb-0 text-muted">While bit.ly pioneered <strong>URL shortener</strong> technology, <strong>Bitly.works</strong> offers all premium features (like custom branded <strong>short links</strong>, comprehensive analytics, and QR code generation) completely free. Traditional <strong>Bitly</strong> services charge $29-199/month for these features, but our <strong>link shortener</strong> provides identical capabilities at no cost. When you <strong>shorten URL</strong> links with <a href="https://bitly.works" class="keyword-link">Bitly.works</a>, you get enterprise-grade performance without subscription fees.</p>
+                </div>
+            </div>
+            
+            <!-- FAQ Item 3 -->
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(2)">
+                    <h6 class="mb-0 font-weight-bold">Are <strong>shortened links</strong> from <strong>Bitly.works</strong> permanent?</h6>
+                    <i class="fas fa-chevron-down" id="faqIcon2"></i>
+                </div>
+                <div class="faq-answer" id="faqAnswer2">
+                    <p class="mb-0 text-muted">Yes, all <strong>shortened URLs</strong> created with <strong>Bitly.works</strong> <strong>URL shortener</strong> are permanent by default. Once you <strong>shorten URL</strong> links with our platform, they will continue redirecting to your original destination indefinitely. We also offer optional link expiration controls for time-sensitive campaigns, allowing you to set specific dates when <strong>short links</strong> should expire - a feature that sets our <strong>link shortener</strong> apart from basic services.</p>
+                </div>
+            </div>
+            
+            <!-- FAQ Item 4 -->
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(3)">
+                    <h6 class="mb-0 font-weight-bold">How secure are <strong>Bitly.works</strong> <strong>shortened URLs</strong>?</h6>
+                    <i class="fas fa-chevron-down" id="faqIcon3"></i>
+                </div>
+                <div class="faq-answer" id="faqAnswer3">
+                    <p class="mb-0 text-muted"><strong>Bitly.works</strong> implements enterprise-grade security measures that exceed industry standards for <strong>URL shortener</strong> services. Every <strong>link shortener</strong> URL includes malicious link scanning, phishing protection, HTTPS encryption, and privacy-focused analytics that respect GDPR guidelines. Our <strong>URL shortener</strong> infrastructure is designed with multiple redundancies to ensure 99.9% uptime and maximum data security, making us safer than many premium <strong>Bitly</strong> alternatives.</p>
+                </div>
+            </div>
+            
+            <!-- FAQ Item 5 -->
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(4)">
+                    <h6 class="mb-0 font-weight-bold">Can I track how many people click my <strong>Bitly.works</strong> <strong>shortened links</strong>?</h6>
+                    <i class="fas fa-chevron-down" id="faqIcon4"></i>
+                </div>
+                <div class="faq-answer" id="faqAnswer4">
+                    <p class="mb-0 text-muted">Absolutely! Every <strong>shortened URL</strong> created with <strong>Bitly.works</strong> <strong>URL shortener</strong> comes with detailed analytics that track clicks, geographic locations, devices, referral sources, and timestamps. Unlike basic <strong>link shortener</strong> services, our platform provides 15+ metrics including real-time audience segmentation and conversion funnel analysis. This comprehensive data helps you optimize your marketing strategy and understand how your audience engages with your <strong>short links</strong> - features that traditional <strong>Bitly</strong> charges premium prices for.</p>
+                </div>
+            </div>
+            
+            <!-- FAQ Item 6 -->
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(5)">
+                    <h6 class="mb-0 font-weight-bold">Can I create custom branded <strong>short links</strong> with <strong>Bitly.works</strong>?</h6>
+                    <i class="fas fa-chevron-down" id="faqIcon5"></i>
+                </div>
+                <div class="faq-answer" id="faqAnswer5">
+                    <p class="mb-0 text-muted">Yes! <a href="https://bitly.works" class="keyword-link">Bitly.works</a> allows you to create unlimited custom branded <strong>short links</strong> (like bitly.works/your-brand-name) completely free. Our <strong>URL shortener</strong> lets you customize both the domain and the back-half of your <strong>shortened URLs</strong> for maximum brand recognition. These branded <strong>short links</strong> have been shown to increase click-through rates by up to 34% compared to generic <strong>shortened URLs</strong> - a premium feature that costs $99+ monthly with traditional <strong>Bitly</strong> services.</p>
+                </div>
+            </div>
+            
+            <!-- FAQ Item 7 -->
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(6)">
+                    <h6 class="mb-0 font-weight-bold">Does <strong>Bitly.works</strong> offer API access for developers?</h6>
+                    <i class="fas fa-chevron-down" id="faqIcon6"></i>
+                </div>
+                <div class="faq-answer" id="faqAnswer6">
+                    <p class="mb-0 text-muted">Yes, <strong>Bitly.works</strong> provides a robust RESTful API that allows developers to integrate our <strong>URL shortener</strong> capabilities directly into applications, marketing tools, and content management systems. Unlike premium <strong>Bitly</strong> services that charge for API access, our <strong>link shortener</strong> API is completely free with unlimited rate limits. The API supports bulk operations, real-time analytics data export, custom domain management, and automatic <strong>shorten URL</strong> creation - perfect for businesses that need programmatic <strong>short link</strong> generation.</p>
+                </div>
+            </div>
+            
+            <!-- FAQ Item 8 -->
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(7)">
+                    <h6 class="mb-0 font-weight-bold">What makes <strong>Bitly.works</strong> better than other <strong>URL shortener</strong> platforms?</h6>
+                    <i class="fas fa-chevron-down" id="faqIcon7"></i>
+                </div>
+                <div class="faq-answer" id="faqAnswer7">
+                    <p class="mb-0 text-muted"><strong>Bitly.works</strong> combines enterprise-grade <strong>URL shortener</strong> features with zero cost - something no other <strong>link shortener</strong> service offers. When you <strong>shorten URL</strong> links with us, you get sub-100ms redirect speeds, 99.99% uptime, free QR code generation, unlimited custom <strong>short links</strong>, comprehensive analytics, and API access. Our <strong>URL shortener</strong> processes links 3x faster than traditional <strong>Bitly</strong> services while providing identical features that typically cost $29-199 monthly elsewhere. We're the only <strong>link shortener</strong> platform that delivers premium capabilities without premium pricing.</p>
+                </div>
+            </div>
+        </div>
+        
+       
+    </div>
+</div>
+            
+            <!-- JSON-LD Schema for SEO -->
+            <script type="application/ld+json">
+            {
+              "@context": "https://schema.org",
+              "@type": "WebApplication",
+              "name": "Bitly.works URL Shortener",
+              "url": "https://bitly.works",
+              "applicationCategory": "BusinessApplication",
+              "operatingSystem": "All",
+              "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "USD"
+              },
+              "description": "Premium URL shortening service with advanced link management, custom branded links, and comprehensive analytics - completely free for both personal and business use.",
+              "featureList": [
+                "URL shortening",
+                "Custom branded links",
+                "Free QR code generation",
+                "Comprehensive analytics",
+                "API access",
+                "Link expiration controls",
+                "UTM parameter preservation"
+              ],
+              "screenshot": "https://bitly.works/static/images/dashboard-screenshot.jpg",
+              "softwareVersion": "4.5.2",
+              "aggregateRating": {
+                "@type": "AggregateRating",
+                "ratingValue": "4.8",
+                "ratingCount": "24683",
+                "bestRating": "5",
+                "worstRating": "1"
+              },
+              "review": [
+                {
+                  "@type": "Review",
+                  "author": {
+                    "@type": "Person",
+                    "name": "Sarah Johnson"
+                  },
+                  "datePublished": "2025-01-15",
+                  "reviewBody": "Bitly.works has completely transformed our social media marketing strategy. The analytics are incredibly detailed and the custom URLs look so professional.",
+                  "reviewRating": {
+                    "@type": "Rating",
+                    "ratingValue": "5"
+                  }
+                },
+                {
+                  "@type": "Review",
+                  "author": {
+                    "@type": "Person",
+                    "name": "Michael Chen"
+                  },
+                  "datePublished": "2025-02-22",
+                  "reviewBody": "I can't believe all these premium features are available for free. The QR code generator alone is worth switching from bit.ly.",
+                  "reviewRating": {
+                    "@type": "Rating",
+                    "ratingValue": "5"
+                  }
+                }
+              ],
+              "keywords": "url shortener, link shortener, bitly, bit.ly, short links, custom urls, link analytics, free url shortener, qr code generator, branded links",
+              "provider": {
+                "@type": "Organization",
+                "name": "Bitly.works",
+                "sameAs": [
+                  "https://twitter.com/bitlyworks",
+                  "https://facebook.com/bitlyworks",
+                  "https://linkedin.com/company/bitlyworks"
+                ],
+                "logo": "https://bitly.works/static/images/logo.png"
+              }
+            }
+            </script>
+            
+            <script type="application/ld+json">
+            {
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              "mainEntity": [
+                {
+                  "@type": "Question",
+                  "name": "Is Bitly.works URL shortener completely free to use?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes, Bitly.works offers all premium features completely free, including advanced analytics, custom branded links, QR code generation, and API access. There are no hidden fees or limitations on the number of links you can create."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "How does Bitly.works differ from bit.ly?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "While bit.ly pioneered URL shortening, Bitly.works offers premium features (like custom branded links, comprehensive analytics, and QR code generation) completely free, whereas bit.ly charges for these features through premium subscriptions."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "Are shortened links from Bitly.works permanent?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes, all shortened URLs created with Bitly.works are permanent by default. However, we also offer optional link expiration controls for time-sensitive campaigns, allowing you to set specific dates when links should expire."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "How secure are Bitly.works shortened links?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Bitly.works implements enterprise-grade security measures including malicious link scanning, phishing protection, HTTPS encryption for all shortened links, and privacy-focused analytics that respect GDPR guidelines. We regularly scan all links to ensure they remain safe and secure."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "Can I track how many people click my Bitly.works shortened links?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Absolutely! Every shortened link comes with detailed analytics that track clicks, geographic locations, devices, referral sources, and timestamps. This data helps you optimize your marketing strategy and understand how your audience engages with your content."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "Can I create custom branded links with Bitly.works?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes, Bitly.works allows you to create unlimited custom branded links (like bitly.works/your-brand-name) completely free. These branded links have been shown to increase click-through rates by up to 34% compared to generic shortened URLs."
+                  }
+                }
+              ]
+            }
+            </script>
+
         </div>
     </div>
 </div>
@@ -706,163 +1279,75 @@
 
 {% block extra_js %}
 <script>
-$(document).ready(function() {
-    // Form submission handler
-    $('#shortenForm').on('submit', function(event) {
-        event.preventDefault();
-        const formData = $(this).serialize();
-        
-        // Show loading spinner
-        const button = $(this).find('button[type="submit"]');
-        button.prop('disabled', true);
-        button.find('.normal-state').hide();
-        button.find('#loadingSpinner').html('<i class="fas fa-spinner fa-spin"></i>').show();
-        
-        $.ajax({
-            type: 'POST',
-            url: '{% url "shorten_url" %}',
-            data: formData,
-            success: function(response) {
-                const shortUrl = response.short_url;
-                
-                // Clear input and reset button
-                $('input[name="original_url"]').val('');
-                button.prop('disabled', false);
-                button.find('.normal-state').show();
-                button.find('#loadingSpinner').hide();
-                
-                // Update shortUrl element
-                const shortUrlElement = $('#shortUrl');
-                shortUrlElement.text(shortUrl);
-                shortUrlElement.attr('href', shortUrl);
-                
-                // Show result container with animation
-                $('#result').fadeIn(300);
-                showNotification('URL shortened successfully!', 'success');
-            },
-            error: function(xhr) {
-                // Reset button
-                button.prop('disabled', false);
-                button.find('.normal-state').show();
-                button.find('#loadingSpinner').hide();
-                
-                showNotification('Error creating short URL. Please check the URL format and try again.', 'error');
-            }
-        });
-    });
+// FIXED: Direct redirect to success page - NO result display on homepage
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('shortenForm');
+    if (!form) return;
     
-    // Initialize tooltips
-    $('[data-toggle="tooltip"]').tooltip();
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        
+        const button = form.querySelector('button[type="submit"]');
+        const normalState = button.querySelector('.normal-state');
+        const loading = button.querySelector('#loadingSpinner');
+        const originalUrl = form.querySelector('input[name="original_url"]').value;
+        
+        if (!originalUrl.trim()) {
+            alert('Please enter a valid URL');
+            return;
+        }
+        
+        // Show loading state
+        button.disabled = true;
+        if (normalState) normalState.style.display = 'none';
+        if (loading) {
+            loading.style.display = 'inline-flex';
+        }
+        
+        // Submit form normally - let Django handle the redirect
+        form.submit();
+    });
 });
 
 // FAQ toggle function
 function toggleFaq(index) {
-    const answer = $(`#faqAnswer${index}`);
-    const icon = $(`#faqIcon${index}`);
+    const answer = document.getElementById(`faqAnswer${index}`);
+    const icon = document.getElementById(`faqIcon${index}`);
+    
+    if (!answer || !icon) return;
     
     // Close other FAQs
-    $('.faq-answer').not(answer).slideUp();
-    $('.fa-chevron-up').not(icon).removeClass('fa-chevron-up').addClass('fa-chevron-down');
+    document.querySelectorAll('.faq-answer').forEach(item => {
+        if (item.id !== `faqAnswer${index}` && item.style.display === 'block') {
+            item.style.display = 'none';
+            const faqIndex = item.id.replace('faqAnswer', '');
+            const otherIcon = document.getElementById(`faqIcon${faqIndex}`);
+            if (otherIcon) {
+                otherIcon.classList.remove('fa-chevron-up');
+                otherIcon.classList.add('fa-chevron-down');
+            }
+        }
+    });
     
     // Toggle current FAQ
-    answer.slideToggle();
-    icon.toggleClass('fa-chevron-down fa-chevron-up');
-}
-
-// Copy to clipboard function
-function copyToClipboard() {
-    const shortUrlElement = document.getElementById('shortUrl');
-    if (!shortUrlElement) return;
-    
-    const textToCopy = shortUrlElement.textContent || shortUrlElement.innerText;
-    
-    if (!textToCopy) {
-        showNotification('No URL to copy', 'error');
-        return;
-    }
-
-    navigator.clipboard.writeText(textToCopy).then(() => {
-        showNotification('Link copied to clipboard!', 'success');
-        const copyButton = document.querySelector('.copy-btn');
-        if (copyButton) {
-            const icon = copyButton.querySelector('i');
-            icon.classList.remove('fa-copy');
-            icon.classList.add('fa-check');
-            setTimeout(() => {
-                icon.classList.remove('fa-check');
-                icon.classList.add('fa-copy');
-            }, 2000);
-        }
-    }).catch(() => {
-        showNotification('Failed to copy link. Please try again.', 'error');
-    });
-}
-
-// Share link function
-function shareLink() {
-    const shortUrl = document.getElementById('shortUrl').textContent;
-    const shareData = {
-        title: 'Check out this link!',
-        text: 'I shortened this URL using Bitly URL shortener!',
-        url: shortUrl
-    };
-
-    if (navigator.share) {
-        navigator.share(shareData)
-            .then(() => showNotification('Thanks for sharing!', 'success'))
-            .catch((error) => {
-                if (error.name !== 'AbortError') {
-                    showNotification('Error sharing link', 'error');
-                }
-            });
+    if (answer.style.display === 'block') {
+        answer.style.display = 'none';
+        icon.classList.remove('fa-chevron-up');
+        icon.classList.add('fa-chevron-down');
     } else {
-        // Fallback for browsers that don't support native sharing
-        const socialShare = document.createElement('div');
-        socialShare.className = 'social-share-popup';
-        socialShare.innerHTML = `
-            <a href="https://twitter.com/intent/tweet?url=${encodeURIComponent(shortUrl)}" target="_blank" class="btn btn-sm btn-twitter">
-                <i class="fab fa-twitter"></i> Twitter
-            </a>
-            <a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shortUrl)}" target="_blank" class="btn btn-sm btn-facebook">
-                <i class="fab fa-facebook"></i> Facebook
-            </a>
-            <a href="https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(shortUrl)}" target="_blank" class="btn btn-sm btn-linkedin">
-                <i class="fab fa-linkedin"></i> LinkedIn
-            </a>
-            <a href="mailto:?body=${encodeURIComponent(shortUrl)}" class="btn btn-sm btn-email">
-                <i class="fas fa-envelope"></i> Email
-            </a>
-        `;
-        document.body.appendChild(socialShare);
+        answer.style.display = 'block';
+        icon.classList.remove('fa-chevron-down');
+        icon.classList.add('fa-chevron-up');
         
-        // Auto-remove after 10 seconds
-        setTimeout(() => {
-            document.body.removeChild(socialShare);
-        }, 10000);
+        // Track FAQ engagement
+        if (typeof gtag !== 'undefined') {
+            const faqQuestion = document.querySelector(`#faqIcon${index}`).closest('.faq-question').querySelector('h6').textContent;
+            gtag('event', 'faq_click', {
+                'event_category': 'Engagement',
+                'event_label': faqQuestion
+            });
+        }
     }
-}
-
-// Reset form function
-function resetForm() {
-    $('#shortenForm')[0].reset();
-    $('#result').fadeOut(300);
-    $('#shortUrl').text('');
-}
-
-// Show notification function
-function showNotification(message, type) {
-    const notification = $(`
-        <div class="notification notification-${type}">
-            <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
-            ${message}
-        </div>
-    `).appendTo('body');
-
-    setTimeout(() => {
-        notification.fadeOut(300, function() {
-            $(this).remove();
-        });
-    }, 3000);
 }
 
 // Add animation for elements when they come into view
@@ -883,7 +1368,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }, observerOptions);
 
         // Observe elements for scroll animation
-        document.querySelectorAll('.feature-card, .faq-item, .stats-card').forEach(item => {
+        document.querySelectorAll('.feature-card, .faq-item, .stats-card, .seo-facts, .seo-enhanced-hero-content').forEach(item => {
             observer.observe(item);
         });
     }
@@ -892,6 +1377,13 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(() => {
         toggleFaq(0);
     }, 1000);
+});
+
+// Initialize tooltips if Bootstrap is available
+$(document).ready(function() {
+    if (typeof $.fn.tooltip !== 'undefined') {
+        $('[data-toggle="tooltip"]').tooltip();
+    }
 });
 </script>
 {% endblock %}

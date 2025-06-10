@@ -1,0 +1,665 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Success - URL Shortened | Bitly{% endblock %}
+
+{% block meta_description %}Your URL has been successfully shortened! Copy, share, or generate a QR code for your new short link.{% endblock %}
+
+{% block extra_css %}
+<style>
+    .success-wrapper {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+    }
+
+    .success-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        padding: 1.25rem;
+        max-width: 580px;
+        width: 100%;
+        text-align: center;
+        animation: slideUp 0.3s ease-out;
+        border: 1px solid #f1f5f9;
+    }
+
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(15px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .success-icon {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+    }
+
+    .success-icon i {
+        color: white;
+        font-size: 1.2rem;
+    }
+
+    .success-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 0.25rem;
+    }
+
+    .success-subtitle {
+        color: #64748b;
+        margin-bottom: 1.25rem;
+        font-size: 0.9rem;
+    }
+
+    .url-container {
+        background: #f8fafc;
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border: 1px solid #e2e8f0;
+    }
+
+    .original-url {
+        font-size: 0.75rem;
+        color: #64748b;
+        margin-bottom: 0.75rem;
+        word-break: break-all;
+        background: white;
+        padding: 0.5rem;
+        border-radius: 6px;
+        border: 1px solid #e2e8f0;
+        line-height: 1.3;
+    }
+
+    .short-url-display {
+        display: flex;
+        align-items: center;
+        background: white;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 0.75rem;
+        transition: all 0.2s ease;
+    }
+
+    .short-url-display:hover {
+        border-color: #4f46e5;
+        box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+    }
+
+    .short-url-text {
+        flex: 1;
+        color: #4f46e5;
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-decoration: none;
+        word-break: break-all;
+        margin-right: 0.75rem;
+        text-align: left;
+    }
+
+    .short-url-text:hover {
+        color: #3730a3;
+        text-decoration: none;
+    }
+
+    .copy-btn {
+        background: #4f46e5;
+        color: white;
+        border: none;
+        padding: 0.5rem 0.75rem;
+        border-radius: 6px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        flex-shrink: 0;
+        font-size: 0.8rem;
+    }
+
+    .copy-btn:hover {
+        background: #3730a3;
+        transform: translateY(-1px);
+    }
+
+    .copy-btn:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.3);
+    }
+
+    .copy-success {
+        background: #059669 !important;
+    }
+
+    .compact-features {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        justify-content: center;
+    }
+
+    .feature-item {
+        background: white;
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        border: 1px solid #e2e8f0;
+        text-align: center;
+        transition: all 0.2s ease;
+        cursor: pointer;
+        min-width: 120px;
+    }
+
+    .feature-item:hover {
+        border-color: #4f46e5;
+        transform: translateY(-1px);
+    }
+
+    .feature-icon {
+        color: #4f46e5;
+        font-size: 1.1rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .feature-label {
+        font-size: 0.7rem;
+        color: #64748b;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .qr-mini {
+        width: 30px;
+        height: 30px;
+        background: #f8fafc;
+        border-radius: 4px;
+        margin: 0 auto 0.25rem;
+        border: 1px solid #e2e8f0;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .action-btn {
+        flex: 1;
+        padding: 0.6rem 0.75rem;
+        border-radius: 6px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        border: none;
+        cursor: pointer;
+        font-size: 0.8rem;
+    }
+
+    .action-btn:hover {
+        transform: translateY(-1px);
+        text-decoration: none;
+    }
+
+    .btn-share {
+        background: #f1f5f9;
+        color: #475569;
+        border: 1px solid #e2e8f0;
+    }
+
+    .btn-share:hover { 
+        background: #e2e8f0;
+        color: #334155;
+    }
+
+    .btn-another {
+        background: #4f46e5;
+        color: white;
+        border: 1px solid #4f46e5;
+    }
+
+    .btn-another:hover { 
+        background: #3730a3;
+        color: white;
+    }
+
+    .compact-stats {
+        display: flex;
+        justify-content: space-around;
+        padding: 0.75rem 0;
+        border-top: 1px solid #e2e8f0;
+        font-size: 0.75rem;
+    }
+
+    .stat-item {
+        text-align: center;
+    }
+
+    .stat-number {
+        display: block;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #1e293b;
+    }
+
+    .stat-label {
+        font-size: 0.65rem;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        margin-top: 0.1rem;
+    }
+
+    .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 0.6rem 0.8rem;
+        border-radius: 6px;
+        color: white;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        animation: slideInNotif 0.3s ease-out;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        max-width: 250px;
+        font-size: 0.8rem;
+    }
+
+    .notification-success {
+        background: #059669;
+    }
+
+    .notification-error {
+        background: #dc2626;
+    }
+
+    @keyframes slideInNotif {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+
+    .share-popup {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        padding: 1.25rem;
+        border-radius: 10px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        z-index: 10000;
+        text-align: center;
+        min-width: 250px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .share-popup h3 {
+        margin: 0 0 0.75rem 0;
+        color: #1e293b;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .share-buttons {
+        display: flex;
+        gap: 0.4rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: 0.75rem;
+    }
+
+    .share-btn {
+        padding: 0.4rem 0.6rem;
+        border-radius: 5px;
+        text-decoration: none;
+        font-size: 0.75rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        border: 1px solid;
+    }
+
+    .share-btn:hover {
+        transform: translateY(-1px);
+        text-decoration: none;
+    }
+
+    .share-twitter {
+        background: #1da1f2;
+        color: white;
+        border-color: #1da1f2;
+    }
+
+    .share-facebook {
+        background: #4267b2;
+        color: white;
+        border-color: #4267b2;
+    }
+
+    .share-email {
+        background: #6b7280;
+        color: white;
+        border-color: #6b7280;
+    }
+
+    .close-btn {
+        background: #f1f5f9;
+        color: #475569;
+        border: 1px solid #e2e8f0;
+        padding: 0.4rem 0.8rem;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 0.75rem;
+        transition: all 0.2s ease;
+    }
+
+    .close-btn:hover {
+        background: #e2e8f0;
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+        .success-card {
+            padding: 1rem;
+            margin: 0.5rem;
+            max-width: 520px;
+        }
+
+        .success-title {
+            font-size: 1.3rem;
+        }
+
+        .short-url-display {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .short-url-text {
+            margin-right: 0;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+
+        .copy-btn {
+            width: 100%;
+        }
+
+        .compact-features {
+            gap: 0.75rem;
+        }
+
+        .feature-item {
+            padding: 0.5rem 0.75rem;
+            min-width: 100px;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+
+        .compact-stats {
+            gap: 0.5rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .success-card {
+            padding: 0.9rem;
+            max-width: 480px;
+        }
+
+        .url-container {
+            padding: 0.75rem;
+        }
+
+        .original-url {
+            font-size: 0.7rem;
+            padding: 0.4rem;
+        }
+
+        .short-url-text {
+            font-size: 0.8rem;
+        }
+
+        .feature-label {
+            font-size: 0.65rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="success-wrapper">
+    <div class="success-card">
+        <div class="success-icon">
+            <i class="fas fa-check"></i>
+        </div>
+
+        <h1 class="success-title">URL Shortened!</h1>
+        <p class="success-subtitle">Your link is ready to share</p>
+
+        <div class="url-container">
+            <div class="original-url">
+                <strong>Original:</strong> {{ original_url|default:"https://example.com/very-long-url-that-needs-to-be-shortened" }}
+            </div>
+
+            <div class="short-url-display">
+                <a href="{{ short_url|default:"https://bitly.works/abc123" }}" 
+                   id="shortUrl" 
+                   class="short-url-text" 
+                   target="_blank" 
+                   rel="noopener noreferrer">
+                    {{ short_url|default:"https://bitly.works/abc123" }}
+                </a>
+                <button class="copy-btn" onclick="copyToClipboard()" id="copyBtn">
+                    <i class="fas fa-copy"></i>
+                    Copy
+                </button>
+            </div>
+        </div>
+
+        <!-- Compact Features Section -->
+        <div class="compact-features">
+            <div class="feature-item" onclick="shareUrl()">
+                <div class="feature-icon">
+                    <i class="fas fa-share-alt"></i>
+                </div>
+                <div class="feature-label">Share</div>
+            </div>
+            
+            <div class="feature-item" onclick="downloadQR()">
+                <canvas id="qrcode" class="qr-mini"></canvas>
+                <div class="feature-label">QR Code</div>
+            </div>
+        </div>
+
+        <!-- Compact Action Buttons -->
+        <div class="action-buttons">
+            <button class="action-btn btn-share" onclick="shareUrl()">
+                <i class="fas fa-share-alt"></i>
+                Share Link
+            </button>
+            
+            <a href="{% url 'home' %}" class="action-btn btn-another">
+                <i class="fas fa-plus"></i>
+                New Link
+            </a>
+        </div>
+
+        <!-- Compact Stats -->
+        <div class="compact-stats">
+            <div class="stat-item">
+                <span class="stat-number">{{ clicks|default:"0" }}</span>
+                <span class="stat-label">Clicks</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">Now</span>
+                <span class="stat-label">Created</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">∞</span>
+                <span class="stat-label">Expires</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- QR Code Library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    generateQRCode();
+});
+
+function generateQRCode() {
+    const shortUrl = document.getElementById('shortUrl').textContent || document.getElementById('shortUrl').href;
+    
+    try {
+        const qr = new QRious({
+            element: document.getElementById('qrcode'),
+            value: shortUrl,
+            size: 30,
+            background: 'white',
+            foreground: '#4f46e5',
+            level: 'M'
+        });
+    } catch (error) {
+        console.error('QR generation failed:', error);
+        document.getElementById('qrcode').style.display = 'none';
+    }
+}
+
+function copyToClipboard() {
+    const shortUrl = document.getElementById('shortUrl').textContent || document.getElementById('shortUrl').href;
+    const copyBtn = document.getElementById('copyBtn');
+    
+    navigator.clipboard.writeText(shortUrl).then(() => {
+        copyBtn.classList.add('copy-success');
+        copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+        
+        showNotification('Link copied!', 'success');
+        
+        setTimeout(() => {
+            copyBtn.classList.remove('copy-success');
+            copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copy';
+        }, 2000);
+        
+        if (typeof gtag !== 'undefined') {
+            gtag('event', 'copy_url', { 'event_category': 'Success Page' });
+        }
+    }).catch(() => {
+        showNotification('Copy failed', 'error');
+    });
+}
+
+function shareUrl() {
+    const shortUrl = document.getElementById('shortUrl').textContent || document.getElementById('shortUrl').href;
+    
+    if (navigator.share) {
+        navigator.share({
+            title: 'Check out this link!',
+            text: 'Shortened with Bitly',
+            url: shortUrl
+        }).then(() => {
+            showNotification('Thanks for sharing!', 'success');
+        }).catch((error) => {
+            if (error.name !== 'AbortError') {
+                fallbackShare(shortUrl);
+            }
+        });
+    } else {
+        fallbackShare(shortUrl);
+    }
+}
+
+function fallbackShare(url) {
+    const popup = document.createElement('div');
+    popup.className = 'share-popup';
+    
+    popup.innerHTML = `
+        <h3>Share Link</h3>
+        <div class="share-buttons">
+            <a href="https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}" target="_blank" class="share-btn share-twitter">
+                <i class="fab fa-twitter"></i> Twitter
+            </a>
+            <a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}" target="_blank" class="share-btn share-facebook">
+                <i class="fab fa-facebook"></i> Facebook
+            </a>
+            <a href="mailto:?body=${encodeURIComponent(url)}" class="share-btn share-email">
+                <i class="fas fa-envelope"></i> Email
+            </a>
+        </div>
+        <button onclick="this.parentNode.remove()" class="close-btn">
+            Close
+        </button>
+    `;
+    
+    document.body.appendChild(popup);
+    setTimeout(() => {
+        if (document.body.contains(popup)) {
+            popup.remove();
+        }
+    }, 10000);
+}
+
+function downloadQR() {
+    try {
+        // Create a larger QR code for download
+        const canvas = document.createElement('canvas');
+        const qr = new QRious({
+            element: canvas,
+            value: document.getElementById('shortUrl').textContent || document.getElementById('shortUrl').href,
+            size: 300,
+            background: 'white',
+            foreground: '#4f46e5',
+            level: 'M'
+        });
+        
+        const link = document.createElement('a');
+        link.download = 'qr-code.png';
+        link.href = canvas.toDataURL();
+        link.click();
+        
+        showNotification('QR downloaded!', 'success');
+        
+        if (typeof gtag !== 'undefined') {
+            gtag('event', 'download_qr', { 'event_category': 'Success Page' });
+        }
+    } catch (error) {
+        showNotification('Download failed', 'error');
+    }
+}
+
+function showNotification(message, type) {
+    document.querySelectorAll('.notification').forEach(n => n.remove());
+    
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+        <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+        <span>${message}</span>
+    `;
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateX(100%)';
+        setTimeout(() => notification.remove(), 300);
+    }, 2500);
+}
+</script>
+{% endblock %}

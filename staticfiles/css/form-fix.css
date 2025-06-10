@@ -1,0 +1,128 @@
+/* Form input and button fixes */
+#shortenForm {
+    max-width: 800px;
+    margin: 0 auto 20px;
+    position: relative;
+}
+
+.url-input-container {
+    display: flex !important;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    margin: 0 auto;
+    width: 100%;
+}
+
+.url-input {
+    flex: 1 1 auto;
+    height: 60px;
+    border: 2px solid #f0f0f0 !important;
+    border-right: none !important;
+    border-radius: 12px 0 0 12px !important;
+    padding: 0 20px !important;
+    font-size: 18px !important;
+    outline: none !important;
+}
+
+.shorten-btn {
+    flex: 0 0 auto;
+    height: 60px;
+    border: none !important;
+    border-radius: 0 12px 12px 0 !important;
+    background: #4e7eff !important;
+    color: white !important;
+    font-weight: bold !important;
+    padding: 0 30px !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.shorten-btn:hover {
+    background: #3a6beb !important;
+}
+
+.shorten-btn i {
+    margin-left: 8px;
+}
+
+/* Trust indicators */
+.trust-indicators {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+    flex-wrap: wrap;
+}
+
+.trust-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 33.33%;
+    padding: 15px;
+    text-align: center;
+}
+
+.trust-item i {
+    font-size: 28px;
+    color: #4e7eff;
+    margin-bottom: 10px;
+}
+
+.trust-item.secure i {
+    color: #28a745;
+}
+
+.trust-item.analytics i {
+    color: #4e7eff;
+}
+
+.trust-item.instant i {
+    color: #ffc107;
+}
+
+.trust-item span {
+    color: #666;
+    font-weight: 500;
+}
+
+/* Fix for smaller screens */
+@media (max-width: 768px) {
+    .url-input-container {
+        flex-direction: row !important; /* Force to stay in one row */
+    }
+    
+    .url-input {
+        border-radius: 12px 0 0 12px !important;
+        border-right: none !important;
+    }
+    
+    .shorten-btn {
+        border-radius: 0 12px 12px 0 !important;
+        width: auto !important;
+        white-space: nowrap;
+    }
+}
+
+@media (max-width: 576px) {
+    .trust-item {
+        width: 100%;
+        padding: 10px;
+    }
+    
+    .url-input {
+        font-size: 16px !important;
+        padding: 0 15px !important;
+    }
+    
+    .shorten-btn {
+        padding: 0 15px !important;
+    }
+    
+    .shorten-btn span {
+        display: inline-block;
+    }
+}

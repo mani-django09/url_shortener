@@ -21,6 +21,10 @@ urlpatterns = [
     path('dashboard/', views.dashboard, name='dashboard'),
     path('qr-generator/', views.qr_generator, name='qr_generator'),
     
+    # NEW: Success page and analytics
+    path('success/<str:short_code>/', views.success_view, name='success'),
+    path('analytics/<str:short_code>/', views.analytics_dashboard, name='analytics_dashboard'),
+    
     # URL shortening endpoints - provide multiple paths for compatibility
     path('shorten_url/', views.shorten_url, name='shorten_url'),  # Main endpoint - underscore
     path('shorten-url/', views.shorten_url, name='shorten_url_dash'),  # Dash version for backward compatibility
@@ -44,5 +48,4 @@ urlpatterns = [
     # Put the catchall pattern LAST - Important!
     path('<str:short_code>/', views.redirect_url, name='redirect-url'),
     path('<str:short_code>', views.redirect_url, name='redirect-url-no-slash'),
-
 ]

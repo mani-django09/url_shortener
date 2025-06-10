@@ -41,49 +41,67 @@ from django.views.decorators.cache import cache_page
 from .models import Link
 from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
 
-
-
 logger = logging.getLogger(__name__)
 
 CUSTOM_DOMAIN = "bitly.works"
 
-
 def dashboard(request):
-    urls = URL.objects.all().order_by('-created_at')  # Consider adding pagination here
+    urls = URL.objects.all().order_by('-created_at')
     context = {
         'urls': urls,
     }
     return render(request, 'shortener/dashboard.html', context)
 
+# Success page view - NEW
+def success_view(request, short_code):
+    """Display success page after URL shortening"""
+    try:
+        url_instance = get_object_or_404(URL, short_code=short_code)
+        short_url = request.build_absolute_uri(f'/{short_code}')
+        
+        # Force HTTPS
+        short_url = short_url.replace("http://", "https://")
+        
+        context = {
+            'short_code': short_code,
+            'short_url': short_url,
+            'original_url': url_instance.original_url,
+            'clicks': url_instance.clicks,
+            'created_at': url_instance.created_at,
+        }
+        return render(request, 'shortener/success.html', context)
+    except URL.DoesNotExist:
+        return redirect('home')
+
 class URLCreateAPIView(generics.CreateAPIView):
     queryset = URL.objects.all()
     serializer_class = URLSerializer
 
-    
     def generate_short_code(self, length=6):
         characters = string.ascii_uppercase + string.ascii_lowercase + string.digits
         while True:
             short_code = ''.join(random.choice(characters) for _ in range(length))
-            if not URL.objects.filter(short_code=short_code).exists():  # Check for uniqueness
+            if not URL.objects.filter(short_code=short_code).exists():
                 return short_code
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             url_instance = serializer.save()
-            url_instance.short_code = self.generate_short_code()  # Generate the short code
+            url_instance.short_code = self.generate_short_code()
             url_instance.save()
             short_url = request.build_absolute_uri(f"/{url_instance.short_code}/")
-            return Response({'short_url': short_url}, status=status.HTTP_201_CREATED)  # Return short URL
+            return Response({'short_url': short_url}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class URLRetrieveAPIView(generics.RetrieveAPIView):
     queryset = URL.objects.all()
-    lookup_field = 'short_code'  # Ensure this matches your URL pattern
+    lookup_field = 'short_code'
 
     def get(self, request, short_code, *args, **kwargs):
         url_instance = get_object_or_404(URL, short_code=short_code)
-        return redirect(url_instance.original_url)  # Redirect to the original URL
+        return redirect(url_instance.original_url)
+
 @cache_page(60 * 15)
 @ensure_csrf_cookie
 def home(request):
@@ -102,13 +120,10 @@ def home(request):
     return render(request, 'shortener/home.html', {'form': form, 'short_url': short_url, 'error_message': error_message})
 
 def redirect_url(request, short_code):
-    """
-    View for redirecting short URLs
-    """
+    """View for redirecting short URLs"""
     logger.info(f"Processing redirect for short code: {short_code}")
     
     try:
-        # Use get() with iexact to make it case-insensitive
         url_instance = URL.objects.get(short_code__iexact=short_code)
         
         # Update click count
@@ -128,65 +143,84 @@ def redirect_url(request, short_code):
         except Exception as e:
             logger.error(f"Error recording analytics: {str(e)}")
         
-        # Redirect to the original URL
         return redirect(url_instance.original_url)
         
     except URL.DoesNotExist:
         logger.error(f"Short code not found: {short_code}")
-        # Create a basic error response
         return HttpResponse(f"The shortened URL '{short_code}' was not found.", status=404)
     except Exception as e:
         logger.error(f"Error in redirect_url: {str(e)}")
         return HttpResponse("An error occurred. Please try again later.", status=500)
-    
-csrf_protect  
+
+@csrf_protect  
 def shorten_url(request):
-    """View function to create shortened URLs"""
+    """View function to create shortened URLs - Updated to support both AJAX and form submission"""
     if request.method == 'POST':
         original_url = request.POST.get('original_url')
         
         # Basic URL validation
         if not original_url:
-            return JsonResponse({'error': 'URL is required'}, status=400)
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'error': 'URL is required'}, status=400)
+            return redirect('home')
         
-        # Add http:// if missing
+        # Add https:// if missing
         if not original_url.startswith(('http://', 'https://')):
             original_url = 'https://' + original_url
         
         try:
+            # Validate URL
+            is_valid, cleaned_url = clean_and_validate_url(original_url)
+            if not is_valid:
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    return JsonResponse({'error': 'Invalid URL format'}, status=400)
+                return redirect('home')
+            
+            original_url = cleaned_url
+            
             # Check if URL already exists in database
             url_hash = hashlib.sha256(original_url.encode()).hexdigest()
             existing_url = URL.objects.filter(url_hash=url_hash).first()
             
             if existing_url:
-                # Return existing short URL
-                url = request.build_absolute_uri(f'/{existing_url.short_code}')
-                url = url.replace("http://", "https://")
-                return JsonResponse({'short_url': url})
-
-            # Create new shortened URL
-            url_instance = URL.objects.create(
-                original_url=original_url,
-                short_code=generate_unique_code(),
-                url_hash=url_hash,
-                created_by_ip=get_client_ip(request)
-            )
+                short_code = existing_url.short_code
+            else:
+                # Create new shortened URL
+                url_instance = URL.objects.create(
+                    original_url=original_url,
+                    short_code=generate_unique_code(),
+                    url_hash=url_hash,
+                    created_by_ip=get_client_ip(request)
+                )
+                short_code = url_instance.short_code
             
-            # Build and return short URL
-            url = request.build_absolute_uri(f'/{url_instance.short_code}')
-            url = url.replace("http://", "https://")
-            return JsonResponse({'short_url': url})
+            # Build short URL
+            short_url = request.build_absolute_uri(f'/{short_code}')
+            short_url = short_url.replace("http://", "https://")
+            
+            # Check if it's an AJAX request
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'short_url': short_url,
+                    'short_code': short_code,
+                    'original_url': original_url
+                })
+            else:
+                # Redirect to success page for form submissions
+                return redirect('success', short_code=short_code)
 
         except Exception as e:
             logger.error(f"Error creating short URL: {str(e)}")
-            return JsonResponse({'error': 'Error creating shortened URL'}, status=500)
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'error': 'Error creating shortened URL'}, status=500)
+            return redirect('home')
 
-    return JsonResponse({'error': 'Invalid request method'}, status=400)
-
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({'error': 'Invalid request method'}, status=400)
+    return redirect('home')
 
 def l_d_view(request):
     return render(request, 'shortener/l_d.html')
-
 
 @require_http_methods(["GET", "POST"])
 def contact_view(request):
@@ -208,7 +242,6 @@ def contact_view(request):
             subject = request.POST.get('subject')
             message = request.POST.get('message')
 
-            # Main email
             email_subject = f'New Contact Form Submission: {subject}'
             email_message = f"""
 New Contact Form Submission
@@ -221,7 +254,6 @@ Message:
 {message}
             """
 
-            # Send using EmailMessage
             main_email = EmailMessage(
                 subject=email_subject,
                 body=email_message,
@@ -231,7 +263,6 @@ Message:
             )
             main_email.send()
 
-            # Confirmation email
             confirmation_message = f"""
 Dear {first_name},
 
@@ -264,10 +295,9 @@ URL Shortener Team
 
     return render(request, 'includes/contact.html')
 
-@csrf_exempt  # Only for testing, remove in production
+@csrf_exempt
 def contact_submit(request):
     if request.method == 'POST':
-        # Get form data
         first_name = request.POST.get('firstName')
         last_name = request.POST.get('lastName')
         email = request.POST.get('email')
@@ -275,7 +305,6 @@ def contact_submit(request):
         message = request.POST.get('message')
 
         try:
-            # Email content
             email_body = f"""
             New Contact Form Submission
             
@@ -287,12 +316,11 @@ def contact_submit(request):
             {message}
             """
 
-            # Send email
             email = EmailMessage(
                 f'Contact Form: {subject}',
                 email_body,
-                'your-email@gmail.com',  # Replace with your email
-                ['your-email@gmail.com'],  # Replace with your email
+                'your-email@gmail.com',
+                ['your-email@gmail.com'],
                 reply_to=[email]
             )
             email.send()
@@ -302,7 +330,7 @@ def contact_submit(request):
                 'message': 'Thank you for your message. We will get back to you soon!'
             })
         except Exception as e:
-            print(f"Error sending email: {str(e)}")  # For debugging
+            print(f"Error sending email: {str(e)}")
             return JsonResponse({
                 'status': 'error',
                 'message': 'Sorry, there was an error sending your message.'
@@ -315,7 +343,6 @@ def terms_view(request):
 
 def privacy_view(request):
     return render(request, 'includes/privacy.html')
-
 
 def sitemap_view(request):
     """Generate the sitemap.xml file"""
@@ -337,8 +364,6 @@ Sitemap: http://{host}/sitemap.xml
 """
     return HttpResponse(content, content_type='text/plain')
 
-#def qr_generator(request):
- #   return render(request, 'shortener/qr_generator.html')
 def qr_generator(request):
     context = {
         'faqs': [
@@ -371,48 +396,57 @@ def qr_generator(request):
     }
     return render(request, 'shortener/qr_generator.html', context)
 
+# Analytics view for success page - NEW
+def analytics_dashboard(request, short_code):
+    """Display analytics for a specific shortened URL"""
+    try:
+        url_instance = get_object_or_404(URL, short_code=short_code)
+        
+        # Get click analytics
+        recent_clicks = ActivityLog.objects.filter(short_code=short_code).order_by('-timestamp')[:50]
+        
+        context = {
+            'url': url_instance,
+            'recent_clicks': recent_clicks,
+            'total_clicks': url_instance.clicks,
+        }
+        return render(request, 'shortener/analytics.html', context)
+    except URL.DoesNotExist:
+        return redirect('home')
+
 class SecurityChecks:
     @staticmethod
     def is_valid_url(url):
-        """
-        Enhanced URL validation that ensures the URL has a proper scheme
-        and meets basic format requirements
-        """
-        # Make sure URL starts with http:// or https://
+        """Enhanced URL validation - FIXED VERSION"""
         if not url.startswith(('http://', 'https://')):
             url = 'https://' + url
         
-        # Remove any surrounding whitespace
         url = url.strip()
         
-        # Basic pattern check before sending to validator
         url_pattern = re.compile(
-            r'^(https?:\/\/)?' +  # scheme
-            r'((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|' +  # domain name
-            r'((\d{1,3}\.){3}\d{1,3}))' +  # OR ip (v4) address
-            r'(\:\d+)?(\/[-a-z\d%_.~+]*)*' +  # port and path
-            r'(\?[;&a-z\d%_.~+=-]*)?' +  # query string
-            r'(\#[-a-z\d_]*)?$',  # fragment locator
+            r'^(https?:\/\/)?' +
+            r'((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|' +
+            r'((\d{1,3}\.){3}\d{1,3}))' +
+            r'(\:\d+)?(\/[-a-z\d%_.~+]*)*' +
+            r'(\?[;&a-z\d%_.~+=-]*)?' +
+            r'(\#[-a-z\d_]*)?$',
             re.IGNORECASE
         )
         
+        # FIXED: Always return a tuple (bool, url)
         if not url_pattern.match(url):
-            return False
+            return False, url
             
         try:
             URLValidator()(url)
-            return True, url  # Return both the validation result and the possibly modified URL
+            return True, url
         except ValidationError:
             return False, url
 
 def clean_and_validate_url(url):
-    """
-    Helper function to clean and validate a URL
-    """
-    # Trim whitespace
+    """Helper function to clean and validate a URL"""
     url = url.strip() if url else ""
     
-    # Add scheme if missing
     if url and not url.startswith(('http://', 'https://')):
         url = 'https://' + url
     
@@ -421,7 +455,6 @@ def clean_and_validate_url(url):
 
     @staticmethod
     def check_phishing_database(url):
-        # Check against Google Safe Browsing API
         api_key = settings.SAFE_BROWSING_API_KEY
         api_url = "https://safebrowsing.googleapis.com/v4/threatMatches:find"
         
@@ -449,11 +482,9 @@ def clean_and_validate_url(url):
         reputation = cache.get(cache_key)
         
         if reputation is None:
-            # Check against various security services (VirusTotal, PhishTank, etc.)
-            # This is a simplified example
             blocked = BlockedDomain.objects.filter(domain=domain).exists()
             reputation = not blocked
-            cache.set(cache_key, reputation, 3600)  # Cache for 1 hour
+            cache.set(cache_key, reputation, 3600)
         
         return reputation
 
@@ -469,40 +500,40 @@ def clean_and_validate_url(url):
             if re.search(pattern, url_lower):
                 return True
         return False
+
 def generate_unique_code():
+    """Generate a unique short code"""
     while True:
         code = ''.join(random.choices(string.ascii_letters + string.digits, k=6))
         if not URL.objects.filter(short_code=code).exists():
             return code
-        
-@csrf_exempt
 
 @csrf_exempt
 def create_short_url(request):
+    """Alternative endpoint for creating short URLs"""
     if request.method == 'POST':
         original_url = request.POST.get('original_url')
         
-        if not SecurityChecks.is_valid_url(original_url):
+        is_valid, cleaned_url = clean_and_validate_url(original_url)
+        if not is_valid:
             return JsonResponse({'error': 'Invalid URL format'}, status=400)
 
         try:
-            url_hash = hashlib.sha256(original_url.encode()).hexdigest()
+            url_hash = hashlib.sha256(cleaned_url.encode()).hexdigest()
             existing_url = URL.objects.filter(url_hash=url_hash).first()
             
             if existing_url:
-                # Build URL and force HTTPS
                 url = request.build_absolute_uri(f'/{existing_url.short_code}')
                 url = url.replace("http://", "https://")
                 return JsonResponse({'short_url': url})
 
             url_instance = URL.objects.create(
-                original_url=original_url,
+                original_url=cleaned_url,
                 short_code=generate_unique_code(),
                 url_hash=url_hash,
                 created_by_ip=get_client_ip(request)
             )
             
-            # Build URL and force HTTPS
             url = request.build_absolute_uri(f'/{url_instance.short_code}')
             url = url.replace("http://", "https://")
             return JsonResponse({'short_url': url})
@@ -514,9 +545,7 @@ def create_short_url(request):
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
 def get_client_ip(request):
-    """
-    Get the client's IP address from request headers
-    """
+    """Get the client's IP address from request headers"""
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
     if x_forwarded_for:
         ip = x_forwarded_for.split(',')[0]
@@ -538,7 +567,6 @@ def record_click(request, url_instance):
         url_instance.clicks += 1
         url_instance.save()
         
-        # Optional: Record more detailed analytics
         ActivityLog.objects.create(
             url=url_instance,
             ip_address=get_client_ip(request),
@@ -548,13 +576,11 @@ def record_click(request, url_instance):
     except Exception as e:
         logger.error(f"Error recording click: {str(e)}")
 
-
 def redirect_view(request, short_code):
     """View for redirecting short URLs"""
     try:
-        url_obj = ShortenedURL.objects.get(short_code=short_code)
+        url_obj = URL.objects.get(short_code=short_code)
         
-        # Set meta tags for the current page
         request.current_meta = {
             'title': f'{short_code} - Bitly URL Redirect',
             'description': f'This shortened URL redirects to a destination selected by the creator. Created with Bitly URL Shortener.',
@@ -566,12 +592,9 @@ def redirect_view(request, short_code):
             'canonical': request.build_absolute_uri(),
         }
         
-        # Update click count and redirect
         url_obj.clicks += 1
         url_obj.save()
         
         return redirect(url_obj.original_url)
-    except ShortenedURL.DoesNotExist:
-        # Handle not found
+    except URL.DoesNotExist:
         return render(request, 'shortener/not_found.html', status=404)
-    

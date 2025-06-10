@@ -1,30 +1,35 @@
-"""
-URL configuration for url_shortener project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.1/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static
 from django.conf import settings
+from django.http import HttpResponse
+
+
+def ads_txt_view(request):
+    """Serve ads.txt file"""
+    content = "google.com, pub-6913093595582462, DIRECT, f08c47fec0942fa0"
+    return HttpResponse(content, content_type='text/plain')
+
+def robots_txt_view(request):
+    """Serve robots.txt file"""
+    lines = [
+        "User-agent: *",
+        "Allow: /",
+        "Sitemap: https://bitly.works/sitemap.xml",
+        "",
+        "# Google AdSense",
+        "User-agent: Mediapartners-Google",
+        "Allow: /",
+    ]
+    return HttpResponse("\n".join(lines), content_type="text/plain")
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('shortener.urls')),
-    # Add your other URL patterns here
+      path('ads.txt', ads_txt_view, name='ads_txt'),
+        path('', include('shortener.urls')),
 ]
 
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+

@@ -52,102 +52,123 @@
     <link rel="canonical" href="{% block canonical_url %}https://bitly.works{{ request.path }}{% endblock %}">
     
     <!-- Favicon -->
-    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'shortener/img/apple-touch-icon.png' %}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'shortener/img/favicon-32x32.png' %}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'shortener/img/favicon-16x16.png' %}">
-    <link rel="manifest" href="{% static 'shortener/site.webmanifest' %}">
-    <link rel="mask-icon" href="{% static 'shortener/img/safari-pinned-tab.svg' %}" color="#4a90e2">
-    <link rel="shortcut icon" href="{% static 'shortener/img/favicon.ico' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+    <link rel="shortcut icon" href="{% static 'favicon.ico' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon-16x16.png' %}">
+    <link rel="manifest" href="{% static 'site.webmanifest' %}">
+    <link rel="mask-icon" href="{% static 'safari-pinned-tab.svg' %}" color="#4a90e2">
     <meta name="msapplication-TileColor" content="#4a90e2">
     <meta name="theme-color" content="#4a90e2">
     
-    <!-- CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
     
-    <!-- Google Analytics -->
-   <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-FESE6FB3S5"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-FESE6FB3S5');
-</script>
-
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6913093595582462"
-     crossorigin="anonymous"></script>
-
-    
-    {% block extra_css %}{% endblock %}
-    
+    <!-- Critical CSS - Inline only essential above-the-fold styles -->
     <style>
+        /* Critical CSS - Only essential above-the-fold styles */
         :root {
             --primary-color: #2D7FF9;
             --secondary-color: #0B1736;
         }
+        
+        /* Essential layout styles */
         .gradient-bg {
             background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
             min-height: 100vh;
         }
-        .card {
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .gradient-text {
-            background: linear-gradient(90deg, #4a90e2 0%, #5c6bc0 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .copy-button {
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .copy-button:hover {
-            color: #4a90e2;
-        }
-        .loading {
-            display: none;
-            width: 20px;
-            height: 20px;
-            border: 2px solid #f3f3f3;
-            border-top: 2px solid #4a90e2;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+        
         .header {
-            background: white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             position: sticky;
             top: 0;
             z-index: 1000;
         }
-        .footer {
-            background: white;
-            padding: 20px 0;
-            margin-top: auto;
-        }
-        .keyword-link {
-            color: inherit;
+        
+        .navbar-brand.logo-container {
             text-decoration: none;
-            border-bottom: 1px dotted #4a90e2;
-            transition: color 0.3s ease;
+            transition: all 0.2s ease;
         }
-        .keyword-link:hover {
-            color: #4a90e2;
-            text-decoration: none;
+
+        .brand-name {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #4e7eff 0%, #5d6fc9 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .brand-suffix {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #6c757d;
+        }
+        
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .brand-name { font-size: 1.5rem; }
+            .brand-suffix { font-size: 1.1rem; }
         }
     </style>
+    
+    <!-- Preload critical CSS -->
+    <link rel="preload" href="{% static 'css/main.css' %}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="{% static 'css/main.css' %}"></noscript>
+    
+    <!-- Load non-critical CSS asynchronously -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap"></noscript>
+    
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></noscript>
+    
+    <link rel="preload" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"></noscript>
+    
+    {% block extra_css %}{% endblock %}
 </head>
 <body class="gradient-bg d-flex flex-column min-vh-100">
-    {% include 'includes/header.html' %}
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar navbar-expand-lg navbar-light">
+            <div class="container">
+                <a class="navbar-brand logo-container" href="/">
+                    <div class="logo-wrapper">
+                        <div class="logo-text">
+                            <span class="brand-name">Bitly</span>
+                            <span class="brand-suffix">.works</span>
+                        </div>
+                    </div>
+                </a>
+                
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/qr-generator/">QR Generator</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/contact/">Contact</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
     
     <main class="flex-grow-1">
         {% block content %}{% endblock %}
@@ -187,37 +208,9 @@
     }
     </script>
     
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "WebApplication",
-        "name": "Bitly QR Code Generator",
-        "url": "{{ request.build_absolute_uri }}",
-        "description": "Free online QR code generator with advanced customization options",
-        "applicationCategory": "Utility",
-        "operatingSystem": "All",
-        "offers": {
-            "@type": "Offer",
-            "price": "0",
-            "priceCurrency": "USD"
-        },
-        "featureList": [
-            "Custom QR Codes",
-            "Multiple QR Types",
-            "High Resolution Downloads",
-            "Analytics Integration",
-            "Dynamic QR Codes"
-        ]
-    }
-    </script>
-    
-    <!-- JavaScript Dependencies (loaded once, with defer attribute) -->
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js" defer></script>
-    <script src="{% static 'js/main.js' %}" defer></script>
-    
-    <!-- Base JavaScript -->
+    <!-- Defer non-critical JavaScript -->
     <script>
+        // Critical JavaScript only
         function copyToClipboard() {
             const shortUrl = document.getElementById('shortUrl').textContent;
             navigator.clipboard.writeText(shortUrl).then(() => {
@@ -230,41 +223,24 @@
                 }, 2000);
             });
         }
-
-        $(document).ready(function() {
-            $('#shortenForm').on('submit', function(event) {
-                event.preventDefault();
-
-                const button = $(this).find('button');
-                const normalState = button.find('.normal-state');
-                const loading = button.find('.loading');
-
-                normalState.hide();
-                loading.show();
-
-                $.ajax({
-                    url: $(this).attr('action'),
-                    method: 'POST',
-                    data: {
-                        original_url: $(this).find('input[name="original_url"]').val(),
-                        csrfmiddlewaretoken: $(this).find('input[name="csrfmiddlewaretoken"]').val(),
-                    },
-                    success: function(response) {
-                        $('#shortUrl').text(response.short_url);
-                        $('#result').show();
-                    },
-                    error: function(xhr) {
-                        alert('Error creating short URL. Please try again.');
-                    },
-                    complete: function() {
-                        loading.hide();
-                        normalState.show();
-                    }
-                });
-            });
-        });
     </script>
     
+    <!-- Load JavaScript asynchronously -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js" defer></script>
+    <script src="{% static 'js/main.js' %}" defer></script>
+    
     {% block extra_js %}{% endblock %}
+    
+    <!-- Analytics loaded last for performance -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FESE6FB3S5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-FESE6FB3S5');
+    </script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6913093595582462" crossorigin="anonymous"></script>
 </body>
 </html>

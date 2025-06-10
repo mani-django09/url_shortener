@@ -23,7 +23,7 @@ class ShortenedURL(models.Model):
     """
     # Base URL fields
     original_url = models.URLField(max_length=2000, help_text="The original long URL")
-    short_code = models.CharField(max_length=10, unique=True, db_index=True, help_text="Unique short code for the URL")
+    short_code = models.CharField(max_length=100, unique=True, db_index=True, help_text="Unique short code for the URL")
     custom_code = models.CharField(max_length=50, blank=True, null=True, db_index=True, help_text="Custom code provided by user")
     
     # Analytics fields
@@ -382,7 +382,7 @@ class URL(models.Model):
     Legacy URL model for backwards compatibility.
     """
     original_url = models.URLField(max_length=2000)
-    short_code = models.CharField(max_length=10, unique=True, blank=True)
+    short_code = models.CharField(max_length=100, unique=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     clicks = models.PositiveIntegerField(default=0)
     url_hash = models.CharField(max_length=64, db_index=True, null=True)
@@ -411,7 +411,7 @@ class URL(models.Model):
 
 class Link(models.Model):
     original_url = models.URLField(max_length=2000)
-    short_code = models.CharField(max_length=10, unique=True)
+    short_code = models.CharField(max_length=100, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     clicks = models.PositiveIntegerField(default=0)
 
